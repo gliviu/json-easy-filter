@@ -3,7 +3,7 @@ json-easy-filter
 
 Javascript node module for convenient json filtering or programatic querying
 
-**Important.** This software is still in early development stage. Use with caution.  
+**Important.** This software is still in early development stage. 
 
 ## Installation
 
@@ -17,22 +17,21 @@ $ npm install json-easy-filter
 var jef = require('json-easy-filter');
 
 var obj = {
-	v1: 100,
-	v2: 200,
-	v3: {
-		v4: 300,
-		v5: 400
-	}
+		v1: 100,
+		v2: 200,
+		v3: {
+				v4: 300,
+				v5: 400
+		}
 };
-
 var numbers = jef(obj).filter(function(node) {
-	if (typeof node.value==='number') {
-		return node.value;
-	}
-});
+		if (typeof node.value==='number') {
+			return node.key + ' ' + node.value;
+		}
+	});
 
 console.log(numbers);
->> [ 100, 200, 300, 400 ]
+>> [ 'v1 100', 'v2 200', 'v4 300', 'v5 400' ]
 ```
 `filter(callback)` method will recursively traverse each node in `obj` and trigger the callback method.
 The `node` parameter received by callback is a wrapper around the real Js object. Get this object by using `node.key` and `node.value`.
@@ -46,7 +45,7 @@ Use this sample <a href="https://raw.githubusercontent.com/gliviu/json-easy-filt
 &#35;1. Display all usernames
 
 ```js
-var res = jef(json).filter(function(node) {
+var res = jef(sample1).filter(function(node) {
 	if (node.hasOwnProperty('username')) {
 		return node.value.username;
 	}
@@ -57,7 +56,7 @@ console.log(res);
 ```
 &#35;2. All employee with salary over 200
 ```js
-var res = jef(json).filter(function(node) {
+var res = jef(sample1).filter(function(node) {
 	if (node.has('salary') && node.value.salary > 200) {
 		return node.value.username + ' ' + node.value.salary;
 	}
@@ -72,10 +71,10 @@ console.log(res);
 **JsonNode**
 Wrapps a real Js node inside the tree that is traversed.
 
-node.key - the key of the currently traversed object.
-node.value - the value of the currently traversed object.
-node.isRoot - true if current node is the root of the object tree.
-node.path - string array containing the path to current node.
-node.level - level of the current node. Root node has level 0.
-node.getPathStr(delimiter) - returns the string representation of node.path.
-node.get(relativePath) - returns the JsonNode relative to the current node.
+* `node.key` - the key of the currently traversed object.
+* `node.value` - the value of the currently traversed object.
+* `node.isRoot` - true if current node is the root of the object tree.
+* `node.path` - string array containing the path to current node.
+* `node.level` - level of the current node. Root node has level 0.
+* `node.getPathStr(delimiter)` - returns the string representation of `node.path`.
+* `node.get(relativePath)` - returns the `JsonNode` relative to the current node.
