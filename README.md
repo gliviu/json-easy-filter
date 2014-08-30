@@ -110,10 +110,8 @@ var res = jef(json).filter(function(node) {
 	}
 });
 console.log(res);
-```
-shows 
-```js 
-[ 'john', 'andy', 'anna', 'gaby', null ] 
+
+>> [ 'john', 'andy', 'anna', 'gaby', null ] 
 ```
 
 
@@ -125,8 +123,6 @@ var res = jef(json).filter(function(node) {
 	}
 });
 console.log(res);
-```
-shows 
-```js 
-[ 'anna 300', 'gaby 400' ] 
+
+>> [ 'anna 300', 'gaby 400' ] 
 ```
