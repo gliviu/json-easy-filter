@@ -111,7 +111,10 @@ var res = jef(json).filter(function(node) {
 });
 console.log(res);
 ```
-shows ```js [ 'john', 'andy', 'anna', 'gaby', null ] ```
+shows 
+```js 
+[ 'john', 'andy', 'anna', 'gaby', null ] 
+```
 
 
 All employee usernames with a salary over 200
@@ -123,4 +126,7 @@ var res = jef(json).filter(function(node) {
 });
 console.log(res);
 ```
-shows ```js [ 'anna 300', 'gaby 400' ] ```
+shows 
+```js 
+[ 'anna 300', 'gaby 400' ] 
+```
