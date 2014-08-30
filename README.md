@@ -6,10 +6,13 @@ Javascript node module for convenient json filtering or programatic querying
 
 ## Installation
 
-  npm install json-easy-filter
+```shell
+$ npm install json-easy-filter
+```
 
 ## Usage
 
+```js
 var jef = require('json-easy-filter');
 
 var obj = {
@@ -27,5 +30,6 @@ var numbers = jef(obj).filter(function(node) {
 	});
 
 console.log(numbers);
+```
 
 will display [ 100, 200, 300, 400 ]
