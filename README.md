@@ -1,18 +1,17 @@
 json-easy-filter
 ================
 
-Javascript node module for convenient json filtering or programatic querying
+Javascript node module for convenient json filtering and programatic querying.
+For other similar projects see <a href="#Links">Links</a> section.
 
 **Important.** This software is still in early development stage. 
 
 ## Installation
-
 ```shell
 $ npm install json-easy-filter
 ```
 
 ## Usage
-
 ```js
 var jef = require('json-easy-filter');
 
@@ -35,11 +34,10 @@ console.log(numbers);
 ```
 `filter(callback)` method will recursively traverse each node in `obj` and trigger the callback method.
 The `node` parameter received by callback is a wrapper around the real Js object. Get this object by using `node.key` and `node.value`.
-Check out the API for more info.
+Check out the <a href="#API">API</a> for more info.
 
 ## Examples
-
-Use this sample <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/master/sampleData1.js" target="_blank">Sample</a> data to follow the examples.
+Use this <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/master/sampleData1.js" target="_blank">sample</a> data to follow the examples.
 
 
 &#35;1. Display all usernames
@@ -54,7 +52,7 @@ console.log(res);
 
 >> [ 'john', 'adams', 'lee', 'scott', null ] 
 ```
-&#35;2. All employee with salary over 200
+&#35;2. Employee with salary over a certain value
 ```js
 var res = jef(sample1).filter(function(node) {
 	if (node.has('salary') && node.value.salary > 200) {
@@ -66,11 +64,10 @@ console.log(res);
 >> [ 'lee 300', 'scott 400' ] 
 ```
 
-### API
-
+<span id="API"></span>
+## API
 **JsonNode**
 Wrapps a real Js node inside the tree that is traversed.
-
 * `node.key` - the key of the currently traversed object.
 * `node.value` - the value of the currently traversed object.
 * `node.isRoot` - true if current node is the root of the object tree.
@@ -78,3 +75,9 @@ Wrapps a real Js node inside the tree that is traversed.
 * `node.level` - level of the current node. Root node has level 0.
 * `node.getPathStr(delimiter)` - returns the string representation of `node.path`.
 * `node.get(relativePath)` - returns the `JsonNode` relative to the current node.
+
+<span id="Links"></span>
+## Links
+* XPath like query for json - [JsonPath](https://www.npmjs.org/package/JSONPath), [SpahQL](https://www.npmjs.org/package/spahql)
+*  Filter, map, reduce - [traverse](https://www.npmjs.org/package/traverse)
+* Json validator - [json-filter](https://www.npmjs.org/package/json-filter)
