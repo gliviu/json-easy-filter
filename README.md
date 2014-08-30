@@ -5,7 +5,7 @@ Javascript node module for convenient json filtering and programatic querying.
 For other similar projects see [Links](#Links) section.
 
 **Important.** This software is still in early development stage. 
-[pookie](#pookie)
+
 ## Installation
 ```shell
 $ npm install json-easy-filter
@@ -37,7 +37,7 @@ The `node` parameter received by callback is a wrapper around the real Js object
 Check out the [API](#API) for more info.
 
 
-## <a name="pookie"></a>Examples
+## Examples
 Use this <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/master/sampleData1.js" target="_blank">sample</a> data to follow the examples.
 
 
