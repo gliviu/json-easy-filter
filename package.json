@@ -1,0 +1,21 @@
+{
+  "name": "json-easy-filter",
+  "version": "0.1.0",
+  "description": "Javascript node module for convenient json filtering or programatic querying",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gliviu/json-easy-filter"
+  },
+  "keywords": [
+    "json",
+    "filter",
+    "query",
+    "validation"
+  ],
+  "dependencies" :{
+	"traverse" : "0.6.6"
+  },
+  "author": "Matt McKegg",
+  "license": "MIT"
+}
