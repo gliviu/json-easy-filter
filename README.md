@@ -2,10 +2,10 @@ json-easy-filter
 ================
 
 Javascript node module for convenient json filtering and programatic querying.
-For other similar projects see <a href="#Links">Links</a> section.
+For other similar projects see [Links](#Links) section.
 
 **Important.** This software is still in early development stage. 
-
+[pookie](#pookie)
 ## Installation
 ```shell
 $ npm install json-easy-filter
@@ -34,9 +34,10 @@ console.log(numbers);
 ```
 `filter(callback)` method will recursively traverse each node in `obj` and trigger the callback method.
 The `node` parameter received by callback is a wrapper around the real Js object. Get this object by using `node.key` and `node.value`.
-Check out the <a href="#API">API</a> for more info.
+Check out the [API](#API) for more info.
 
-## Examples
+
+## <a name="pookie"></a>Examples
 Use this <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/master/sampleData1.js" target="_blank">sample</a> data to follow the examples.
 
 
@@ -64,7 +65,7 @@ console.log(res);
 >> [ 'lee 300', 'scott 400' ] 
 ```
 
-<span id="API"></span>
+<a name="API"></a>
 ## API
 **JsonNode**
 Wrapps a real Js node inside the tree that is traversed.
@@ -76,7 +77,7 @@ Wrapps a real Js node inside the tree that is traversed.
 * `node.getPathStr(delimiter)` - returns the string representation of `node.path`.
 * `node.get(relativePath)` - returns the `JsonNode` relative to the current node.
 
-<span id="Links"></span>
+<a name="Links"></a>
 ## Links
 * XPath like query for json - [JsonPath](https://www.npmjs.org/package/JSONPath), [SpahQL](https://www.npmjs.org/package/spahql)
 *  Filter, map, reduce - [traverse](https://www.npmjs.org/package/traverse)
