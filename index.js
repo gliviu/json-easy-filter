@@ -25,8 +25,8 @@ var JsonNode = function(){
 	this.parent = null;
 	this.isRoot = null;
 	this.path = [];
-	this.isLeaf = null;
-	this.circular = null;
+//	this.isLeaf = null;
+//	this.circular = null;
 	this.level = null;
 	this.getPathStr = function(delimiter){
 		return _getPathStr(this.path, delimiter);

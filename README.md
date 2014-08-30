@@ -3,6 +3,7 @@ json-easy-filter
 
 Javascript node module for convenient json filtering or programatic querying
 
+**Important.** This software is still in early development stage. Use with caution.  
 
 ## Installation
 
@@ -31,78 +32,19 @@ var numbers = jef(obj).filter(function(node) {
 });
 
 console.log(numbers);
+>> [ 100, 200, 300, 400 ]
 ```
-
-displays [ 100, 200, 300, 400 ]
+`filter(callback)` method will recursively traverse each node in `obj` and trigger the callback method.
+The `node` parameter received by callback is a wrapper around the real Js object. Get this object by using `node.key` and `node.value`.
+Check out the API for more info.
 
 ## Examples
 
-Sample data
-```js
-var json = {
-	departments : {
-		admin : {
-			name : "Administrative",
-			manager : 'john',
-			employees : [ 'john', 'anna' ]
-		},
-		it : {
-			name : 'IT',
-			manager : 'andy',
-			employees : [ 'gaby', 'john', 'boby' ]
-		},
-		finance : {
-			name : 'Financiar',
-			manager : 'anna',
-			employees : [ 'andy', 'gaby', 'anna' ]
-		}
-	},
-	employees : [
-		{
-			username : 'john',
-			firstName : 'John',
-			lastName : 'JOHN',
-			salary : 150,
-			gender : 'M',
-			birthDate : '1980/05/21'
-		}, 
-		{
-			username : 'andy',
-			firstName : 'Andy',
-			lastName : 'ANDY',
-			salary : 200,
-			gender : 'M',
-			birthDate : '1985/10/30'
-		}, 
-		{
-			username : 'anna',
-			firstName : 'Anna',
-			lastName : 'ANNA',
-			salary : 300,
-			gender : 'F',
-			birthDate : '1989/08/05'
-		}, 
-		{
-			username : 'gaby',
-			firstName : 'Gaby',
-			lastName : 'GABY',
-			salary : 400,
-			gender : 'M',
-			birthDate : '1993/11/20'
-		}, 
-		{
-			username : null,
-			firstName : 'Unknown',
-			lastName : 'Unknown',
-			salary : 100,
-			gender : 'M',
-			birthDate : '1993/11/20'
-		} 
-	]
-};
-```
+Use this sample <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/master/sampleData1.js" target="_blank">Sample</a> data to follow the examples.
 
-Display all usernames.
+
+&#35;1. Display all usernames
+
 ```js
 var res = jef(json).filter(function(node) {
 	if (node.hasOwnProperty('username')) {
@@ -111,11 +53,9 @@ var res = jef(json).filter(function(node) {
 });
 console.log(res);
 
->> [ 'john', 'andy', 'anna', 'gaby', null ] 
+>> [ 'john', 'adams', 'lee', 'scott', null ] 
 ```
-
-
-All employee usernames with a salary over 200
+&#35;2. All employee with salary over 200
 ```js
 var res = jef(json).filter(function(node) {
 	if (node.has('salary') && node.value.salary > 200) {
@@ -124,5 +64,18 @@ var res = jef(json).filter(function(node) {
 });
 console.log(res);
 
->> [ 'anna 300', 'gaby 400' ] 
+>> [ 'lee 300', 'scott 400' ] 
 ```
+
+### API
+
+**JsonNode**
+Wrapps a real Js node inside the tree that is traversed.
+
+node.key - the key of the currently traversed object.
+node.value - the value of the currently traversed object.
+node.isRoot - true if current node is the root of the object tree.
+node.path - string array containing the path to current node.
+node.level - level of the current node. Root node has level 0.
+node.getPathStr(delimiter) - returns the string representation of node.path.
+node.get(relativePath) - returns the JsonNode relative to the current node.
