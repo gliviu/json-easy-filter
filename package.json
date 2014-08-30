@@ -16,6 +16,6 @@
   "dependencies" :{
 	"traverse" : "0.6.6"
   },
-  "author": "Matt McKegg",
+  "author": "Liviu Grigorescu",
   "license": "MIT"
 }
