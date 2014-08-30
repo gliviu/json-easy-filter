@@ -16,12 +16,12 @@ $ npm install json-easy-filter
 var jef = require('json-easy-filter');
 
 var obj = {
-		v1: 100,
-		v2: 200,
-		v3: {
-				v4: 300,
-				v5: 400
-		}
+	v1: 100,
+	v2: 200,
+	v3: {
+		v4: 300,
+		v5: 400
+	}
 };
 var numbers = jef(obj).filter(function(node) {
 		if (typeof node.value==='number') {
