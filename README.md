@@ -2,6 +2,7 @@ json-easy-filter
 ================
 
 Javascript node module for convenient json filtering and programatic querying.
+
 For other similar projects see [Links](#Links) section.
 
 **Important.** This software is still in early development stage. 
@@ -33,6 +34,7 @@ console.log(numbers);
 >> [ 'v1 100', 'v2 200', 'v4 300', 'v5 400' ]
 ```
 `filter(callback)` method will recursively traverse each node in `obj` and trigger the callback method.
+
 The `node` parameter received by callback is a wrapper around the real Js object. Get this object by using `node.key` and `node.value`.
 Check out the [API](#API) for more info.
 
@@ -79,6 +81,6 @@ Wrapps a real Js node inside the tree that is traversed.
 
 <a name="Links"></a>
 ## Links
-* XPath like query for json - [JsonPath](https://www.npmjs.org/package/JSONPath), [SpahQL](https://www.npmjs.org/package/spahql)
-*  Filter, map, reduce - [traverse](https://www.npmjs.org/package/traverse)
-* Json validator - [json-filter](https://www.npmjs.org/package/json-filter)
+* XPath like query for json - <a href="https://www.npmjs.org/package/JSONPath" target="_blank">JsonPath</a>, <a href="https://www.npmjs.org/package/spahql" target="_blank">SpahQL</a>
+*  Filter, map, reduce - <a href="https://www.npmjs.org/package/traverse" target="_blank">traverse</a>
+* Json validator - <a href="https://www.npmjs.org/package/json-filter" target="_blank">json-filter</a>
