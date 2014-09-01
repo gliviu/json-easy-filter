@@ -40,7 +40,7 @@ Check out the [API](#API) for more info.
 
 
 ## Examples
-Use this <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/master/sampleData1.js" target="_blank">sample</a> data to follow the examples.
+Use this <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/master/tests/sampleData1.js" target="_blank">sample</a> data to follow the examples.
 
 
 &#35;1. Display all usernames
