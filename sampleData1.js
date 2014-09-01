@@ -2,11 +2,13 @@ var sample1 = {
 	departments : {
 		admin : {
 			name : "Administrative",
+			code : "adm",
 			manager : 'john',
 			employees : [ 'john', 'lee' ]
 		},
 		it : {
 			name : 'IT',
+			code : "it",
 			manager : 'adams',
 			employees : [ 'scott', 'john', 'lewis' ]
 		},
@@ -14,16 +16,6 @@ var sample1 = {
 			name : 'Financiar',
 			manager : 'lee',
 			employees : [ 'adams', 'scott', 'lee' ]
-		},
-		marketing : {
-			name : 'Commercial',
-			employees : []
-		},
-		hr : {
-			name : 'Human resources',
-		},
-		supply: {
-			employees: 'scott'
 		}
 	},
 	employees : [ 

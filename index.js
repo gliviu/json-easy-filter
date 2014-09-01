@@ -54,6 +54,21 @@ var JsonNode = function(){
 		return result;
 	};
 
+	this.validate = function(callback){
+		var result = true;
+		for(var absolutePath in this._nodeHash){
+			if(absolutePath.indexOf(this._pathStr)===0){
+				var node = this._nodeHash[absolutePath];
+				
+				var resCallBack = callback(node);
+				if(resCallBack===false){
+					result = false;
+				}
+			}
+		}
+		return result;
+	};
+
 	
 	this.has = function(key){
 		if(!this.value){
@@ -71,7 +86,14 @@ var JsonNode = function(){
 			return false;
 		}
 		return this.value.hasOwnProperty(key);
-	}
+	};
+	
+	/**
+	 * Returns one of string, array, object, function, undefined, number 
+	 */
+	this.getType = function () {
+		return ({}).toString.call(this.value).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+	};
 	
 	this._debugNodeHash = function(){
 		for(var absolutePath in this._nodeHash){

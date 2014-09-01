@@ -78,6 +78,7 @@ Wrapps a real Js node inside the tree that is traversed.
 * `node.level` - level of the current node. Root node has level 0.
 * `node.getPathStr(delimiter)` - returns the string representation of `node.path`.
 * `node.get(relativePath)` - returns the `JsonNode` relative to the current node.
+* `node.getType()` - returns the type of `node.value` as one of 'string', 'array', 'object', 'function', 'undefined', 'number'
 
 <a name="Links"></a>
 ## Links
