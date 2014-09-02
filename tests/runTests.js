@@ -1,3 +1,5 @@
+"use strict";
+
 var tests1 = require('./tests1-examples')();
 var tests2 = require('./tests2')();
 
@@ -11,21 +13,39 @@ function passed(value){
 
 function runTests() {
 	var res = null;
-	// Tests1
-	res = tests1.test1();
-	console.log('tests1/test1: ' + passed(res));
-	res = tests1.test2();
-	console.log('tests1/test2: ' + passed(res));
-	res = tests1.test3();
-	console.log('tests1/test3: ' + passed(res));
-	res = tests1.test4(true);
-	console.log('tests1/test4: ' + passed(res));
+	console.log('Tests1 - filter');
+	res = tests1.test1_filter();
+	console.log('tests1/test1_filter: ' + passed(res));
+	res = tests1.test2_filter();
+	console.log('tests1/test2_filter: ' + passed(res));
+	res = tests1.test3_filter();
+	console.log('tests1/test3_filter: ' + passed(res));
+	res = tests1.test4_filter();
+	console.log('tests1/test4_filter: ' + passed(res));
+	res = tests1.test5_filter();
+	console.log('tests1/test5_filter: ' + passed(res));
+
+	console.log('\nTests1 - validate');
+	res = tests1.test1_validate();
+	console.log('tests1/test1_validate: ' + passed(res));
+	res = tests1.test2_validate();
+	console.log('tests1/test2_validate: ' + passed(res));
 	
-	// Tests1
-	console.log();
+	console.log('\nTests2');
 	res = tests2.test1();
 	console.log('tests2/test1: ' + passed(res));
+	res = tests2.test2();
+	console.log('tests2/test2: ' + passed(res));
 }
 
 
 runTests();
+
+//var r = /^(users|liviu)$/;
+//var x = r.test('users');
+//console.log(x);
+//console.log(r instanceof RegExp);
+
+
+
+

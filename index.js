@@ -1,3 +1,5 @@
+"use strict";
+
 var traverse = require("traverse");
 
 var ROOT_KEY = '$root_4285190851';
@@ -39,7 +41,7 @@ var JsonNode = function(){
 			absolutePath = this.getPathStr()+'.'+relPathStr;
 		}
 		return this._nodeHash[ROOT_KEY+'.'+absolutePath];
-	}
+	};
 	this.filter = function(callback){
 		var result = [];
 		for(var absolutePath in this._nodeHash){
@@ -74,18 +76,24 @@ var JsonNode = function(){
 		if(!this.value){
 			return false;
 		}
-		if(this.value[key]!==undefined){
-			return true;
+		if(key instanceof RegExp){
+			if(this.getType()==='object'){
+				for(var k in this.value){
+					if(key.test(k)){
+						return true;
+					}
+				}
+				return false;
+			} else{
+				return false;
+			}
 		} else{
-			return false;
+			if(this.value[key]!==undefined){
+				return true;
+			} else{
+				return false;
+			}
 		}
-	};
-	
-	this.hasOwnProperty = function(key){
-		if(!this.value){
-			return false;
-		}
-		return this.value.hasOwnProperty(key);
 	};
 	
 	/**
@@ -128,7 +136,12 @@ module.exports = function(obj){
 			
 			// Parent
 			var parentPath = node.path.slice(0, node.path.length - 1);
-			var parentNode = nodeHash[ROOT_KEY+'.'+_getPathStr(parentPath)];
+			var parentNode;
+			if(parentPath.length === 0){
+				parentNode = nodeHash[ROOT_KEY];
+			} else{
+				parentNode = nodeHash[ROOT_KEY+'.'+_getPathStr(parentPath)];
+			}
 			if(parentNode){
 				node.parent = parentNode;
 			}

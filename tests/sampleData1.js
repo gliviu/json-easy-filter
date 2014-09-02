@@ -33,7 +33,22 @@ var sample1 = {
 			lastName : 'JOHN',
 			salary : 150,
 			gender : 'M',
-			birthDate : '1980/05/21'
+			birthDate : '1980/05/21',
+			contact: [
+			          {
+			        	  phone: '12345678'
+			          },
+			          {
+			        	  email: 'a@b.c'
+			          },
+			          {
+			        	  type: 'address',
+			        	  address: {
+			        		  city: 'NY',
+			        		  country: 'US'
+			        	  }
+			          }
+			]
 		}, 
 		{
 			username : 'adams',
@@ -56,7 +71,6 @@ var sample1 = {
 			firstName : 'Scott',
 			lastName : 'SCOTT',
 			salary : 400,
-			gender : 'M',
 			birthDate : '1993/11/20'
 		}, 
 		{
@@ -66,6 +80,10 @@ var sample1 = {
 			salary : 100,
 			gender : 'M',
 			birthDate : '1993/11/20'
+		}, 
+		{
+			firstName : 'Unknown2',
+			lastName : 'Unknown2',
 		} 
 	]
 };

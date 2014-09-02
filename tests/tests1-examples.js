@@ -1,4 +1,6 @@
-var jef = require('json-easy-filter');
+"use strict";
+
+var Jef = require('json-easy-filter');
 var sample1 = require('./sampleData1.js');
 
 
@@ -6,23 +8,23 @@ var Tests1 = function(){
 	/**
 	 * All usernames.
 	 */
-	this.test1 = function() {
-		var res = jef(sample1).filter(function(node) {
+	this.test1_filter = function() {
+		var res = new Jef(sample1).filter(function(node) {
 			if (node.hasOwnProperty('username')) {
 				return node.value.username;
 			}
 		});
 		// console.log(res);
 		var testResult = res.toString() === [ 'john', 'adams', 'lee', 'scott', null ]
-				.toString();
+		.toString();
 		return testResult;
 	};
 
 	/**
-	 * All usernames with salary over 200.
+	 * Usernames with salary over 200.
 	 */
-	this.test2 = function() {
-		var res = jef(sample1).filter(function(node) {
+	this.test2_filter = function() {
+		var res = new Jef(sample1).filter(function(node) {
 			if (node.has('salary') && node.value.salary > 200) {
 				return node.value.username + ' ' + node.value.salary;
 			}
@@ -32,11 +34,91 @@ var Tests1 = function(){
 		return testResult;
 	};
 
+	// Paths, has(RegExp)
+	this.test3_filter = function(printResult){
+		var res = new Jef(sample1).filter(function(node){
+			if(node.has(/^(phone|email|city)$/)){
+				return node.getPathStr();
+			}
+		});
+		if(printResult){
+			console.log(res);
+		}
+		var testResult = res.toString() === [ 'employees.0.contact.0',
+		                                      'employees.0.contact.1',
+		                                      'employees.0.contact.2.address' ].toString();
+		return testResult;
+	};
+
+
+	// node.parent and node.get()
+	this.test4_filter = function(printResult){
+		var res = new Jef(sample1).filter(function(node){
+			if(node.key==='email' && node.value==='a@b.c'){
+				var res = [];
+				res.push('Email: key - '+node.key+', value: '+node.value+', path: '+node.getPathStr());
+
+				var emailContainer = node.parent;
+				res.push('Email parent: key - '+emailContainer.key+', type: '+emailContainer.getType()+', path: '+emailContainer.getPathStr());
+
+				var contact = node.parent.parent;
+				res.push('Contact: key - '+contact.key+', type: '+contact.getType()+', path: '+contact.getPathStr());
+
+				var city = contact.get('2.address.city');
+				res.push('City: key - '+city.key+', type: '+city.value+', path: '+city.getPathStr());
+
+				return res;
+			}
+		});
+		if(printResult){
+			console.log(res);
+		}
+		var testResult = res.toString() === [ [ 'Email: key - email, value: a@b.c, path: employees.0.contact.1.email',
+		                                        'Email parent: key - 1, type: object, path: employees.0.contact.1',
+		                                        'Contact: key - contact, type: array, path: employees.0.contact',
+		                                        'City: key - city, type: NY, path: employees.0.contact.2.address.city' ] ].toString();
+		return testResult;
+	};
+
 	/**
-	 * Validate departments have managers
+	 * Handling arrays
 	 */
-	this.test3 = function(printResult) {
-		var res = jef(sample1).validate(function(node) {
+	this.test5_filter = function(printResult) {
+		var res = new Jef(sample1).filter(function(node){
+			if(node.parent && node.parent.key==='employees'){
+				if(node.getType()==='object'){
+					return 'key: '+node.key+', username: '+node.value.username+', path: '+node.getPathStr();
+				} else{
+					return 'key: '+node.key+', username: '+node.value+', path: '+node.getPathStr();
+				}
+			}
+		});
+		if(printResult){
+			console.log(res);
+		}
+		var testResult = res.toString() === [ 'key: 0, username: john, path: departments.admin.employees.0',
+		                                      'key: 1, username: lee, path: departments.admin.employees.1',
+		                                      'key: 0, username: scott, path: departments.it.employees.0',
+		                                      'key: 1, username: john, path: departments.it.employees.1',
+		                                      'key: 2, username: lewis, path: departments.it.employees.2',
+		                                      'key: 0, username: adams, path: departments.finance.employees.0',
+		                                      'key: 1, username: scott, path: departments.finance.employees.1',
+		                                      'key: 2, username: lee, path: departments.finance.employees.2',
+		                                      'key: 0, username: john, path: employees.0',
+		                                      'key: 1, username: adams, path: employees.1',
+		                                      'key: 2, username: lee, path: employees.2',
+		                                      'key: 3, username: scott, path: employees.3',
+		                                      'key: 4, username: null, path: employees.4',
+		                                      'key: 5, username: undefined, path: employees.5' ].toString();
+		return testResult;
+	};
+
+
+	/**
+	 * Check each department has manager
+	 */
+	this.test1_validate = function(printResult) {
+		var res = new Jef(sample1).validate(function(node) {
 			if (node.parent && node.parent.key==='departments' && !node.has('manager')) {
 				return false;
 			}
@@ -49,13 +131,14 @@ var Tests1 = function(){
 		return testResult;
 	};
 
-	
+
+
 	/**
 	 * Validate departments and employees
 	 */
-	this.test4 = function(printResult) {
+	this.test2_validate = function(printResult) {
 		var info = [];
-		var res = jef(sample1).validate(function(node) {
+		var res = new Jef(sample1).validate(function(node) {
 			var valid = true;
 			if (node.parent && node.parent.key==='departments' ) {
 				// Inside department
@@ -69,22 +152,41 @@ var Tests1 = function(){
 				} else if(node.get('employees').getType()!=='array'){
 					valid = false;
 					info.push('Error: '+node.key+' department has wrong employee list type "'+node.get('employees').getType()+'"');
-				} else if(node.value.employees.length==0){
+				} else if(node.value.employees.length===0){
 					info.push('Warning: '+node.key+' department has no employees');
 				}
 			}
+			if (node.parent && node.parent.key==='employees' && node.getType()==='object') {
+				// Inside employee
+				if(!node.has('username') || node.get('username').getType()!=='string'){
+					valid = false;
+					info.push('Error: Employee '+node.getPathStr()+' does not have username');
+				} else if(!node.has('gender')){
+					info.push('Warning: Employee '+node.value.username+' does not have gender');
+				}
+			}
+
 			return valid;
 		});
 		if(printResult){
 			console.log(res.toString());
 			console.log(info);
 		}
-		var testResult = res.toString() === false.toString();
-		return testResult;
+		var testResult1 = res.toString() === false.toString();
+		var testResult2 = info.toString() === [ 'Error: marketing department is missing mandatory manager property',
+		                                        'Warning: marketing department has no employees',
+		                                        'Error: hr department is missing mandatory manager property',
+		                                        'Error: hr department is missing mandatory employee list',
+		                                        'Error: supply department is missing mandatory manager property',
+		                                        'Error: supply department has wrong employee list type "string"',
+		                                        'Warning: Employee scott does not have gender',
+		                                        'Error: Employee employees.4 does not have username',
+		                                        'Error: Employee employees.5 does not have username' ].toString();
+		return testResult1 && testResult2;
 	};
 
-	
-	
+
+
 };
 
 module.exports = function(){
