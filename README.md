@@ -38,7 +38,7 @@ Check out the examples and [API](#API) for more info.
 
 
 ## Examples
-Use the <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/master/tests/sampleData1.js" target="_blank">sample</a> data to follow this section.
+Use the <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/v0.2.0/tests/sampleData1.js" target="_blank">sample</a> data to follow this section.
 
 ### Filter
 &#35;1. node.has()
