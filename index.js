@@ -124,11 +124,17 @@ module.exports = function(obj){
 			node._nodeHash = nodeHash;
 			node.pathArray = this.path;
 			node.path = _getPathStr(node.pathArray);
-			node._internalPath = ROOT_KEY+'.'+_getPathStr(node.pathArray);
 			node.key = this.key;
 			node.value = this.node;
 			node.level = this.level;
 			node.isRoot = this.isRoot;
+
+			// Internal path
+			if(this.level===0){
+				node._internalPath = ROOT_KEY;
+			} else{
+				node._internalPath = ROOT_KEY+'.'+_getPathStr(node.pathArray);
+			}
 			
 			// Hash
 			if(node.isRoot){
