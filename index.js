@@ -115,7 +115,7 @@ var JsonNode = function(){
 };
 
 
-module.exports = function(obj){
+var JsonEasyFilter = function(obj){
 	this._traverse = function(obj){
 		var nodeHash = {};
 		traverse(obj).forEach(function(val){
@@ -168,3 +168,4 @@ module.exports = function(obj){
 	return this._build(obj);
 };
 
+module.exports = JsonEasyFilter;

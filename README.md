@@ -242,6 +242,9 @@ false
 
 <a name="API"></a>
 ## API
+
+`JsonEasyFilter(jsonData)` - traverses jsonData and builds a hash map of ``JsonNode`` objects. Returns the root node.
+
 **JsonNode**
 Wrapps a real Js node inside the tree that is traversed.
 * `node.key` - the key of the currently traversed object.
@@ -253,6 +256,8 @@ Wrapps a real Js node inside the tree that is traversed.
 * `node.has(propertyName)` - returns true if `node.value` has that property. If a regular expression is passed, all `node.value` property names are iterated and matched against pattern. 
 * `node.get(relativePath)` - returns the `JsonNode` relative to current node or 'undefined' if path cannot be found.
 * `node.getType()` - returns the type of `node.value` as one of 'string', 'array', 'object', 'function', 'undefined', 'number', 'null'.
+* `node.filter(callback)` - traverses node's children and triggers `callback(childNode)`. The result of callback call is added to an array which is later returned by  filter method.
+* `node.validate(callback)` - traverses node's children and triggers `callback(childNode)`. If any of the calls to callback method returns `false`, validate method will also return `false`.
 
 <a name="Links"></a>
 ## Links
