@@ -6,7 +6,7 @@ var sample1 = require('./sampleData1.js');
 
 var Tests1 = function(){
 	/**
-	 * Display all usernames.
+	 * node.has()
 	 */
 	this.test1_filter = function(printResult) {
 		var res = new Jef(sample1).filter(function(node) {
@@ -23,7 +23,7 @@ var Tests1 = function(){
 	};
 
 	/**
-	 * Employee with salary over a certain value.
+	 * node.value
 	 */
 	this.test2_filter = function(printResult) {
 		var res = new Jef(sample1).filter(function(node) {
@@ -38,7 +38,7 @@ var Tests1 = function(){
 		return testResult;
 	};
 
-	// Paths, has(RegExp)
+	// Paths, node.has(RegExp)
 	this.test3_filter = function(printResult){
 		var res = new Jef(sample1).filter(function(node){
 			if(node.has(/^(phone|email|city)$/)){
@@ -55,21 +55,27 @@ var Tests1 = function(){
 	};
 
 
-	// node.parent and node.get()
+	// node.key, node.parent and node.get()
 	this.test4_filter = function(printResult){
 		var res = new Jef(sample1).filter(function(node){
 			if(node.key==='email' && node.value==='a@b.c'){
 				var res = [];
 				res.push('Email: key - '+node.key+', value: '+node.value+', path: '+node.path);
 
-				var emailContainer = node.parent;
-				res.push('Email parent: key - '+emailContainer.key+', type: '+emailContainer.getType()+', path: '+emailContainer.path);
+				if(node.parent){ // Test parent exists
+					var emailContainer = node.parent;
+					res.push('Email parent: key - '+emailContainer.key+', type: '+emailContainer.getType()+', path: '+emailContainer.path);
+				}
 
-				var contact = node.parent.parent;
-				res.push('Contact: key - '+contact.key+', type: '+contact.getType()+', path: '+contact.path);
+				if(node.parent && node.parent.parent){
+					var contact = node.parent.parent;
+					res.push('Contact: key - '+contact.key+', type: '+contact.getType()+', path: '+contact.path);
 
-				var city = contact.get('2.address.city');
-				res.push('City: key - '+city.key+', type: '+city.value+', path: '+city.path);
+					var city = contact.get('2.address.city');
+					if(city){ // Test relative path exists. node.get() returns 'undefined' otherwise.
+						res.push('City: key - '+city.key+', type: '+city.value+', path: '+city.path);
+					}
+				}
 
 				return res;
 			}

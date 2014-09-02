@@ -9,7 +9,7 @@ var Jef = require('json-easy-filter');
 
 
 function passed(value){
-	return value?'Passed':'Failed';
+	return value?'Passed':'!!!!FAILED!!!!';
 }
 
 function runTests() {

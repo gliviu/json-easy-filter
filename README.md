@@ -43,7 +43,7 @@ Check out the [API](#API) for more info.
 Use this <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/master/tests/sampleData1.js" target="_blank">sample</a> data to follow the examples.
 
 
-&#35;1. Display all usernames
+&#35;1. node.has()
 
 ```js
 var res = new Jef(sample1).filter(function(node) {
@@ -55,7 +55,7 @@ console.log(res);
 
 >> [ 'john', 'adams', 'lee', 'scott', null ] 
 ```
-&#35;2. Employee with salary over a certain value
+&#35;2. node.value
 ```js
 var res = new Jef(sample1).filter(function(node) {
 	if (node.has('salary') && node.value.salary > 200) {
@@ -66,7 +66,7 @@ console.log(res);
 >> [ 'lee 300', 'scott 400' ] 
 ```
 
-&#35;3. Paths, has(RegExp)
+&#35;3. Paths, node.has(RegExp)
 ```js
 var res = new Jef(sample1).filter(function(node){
 	if(node.has(/^(phone|email|city)$/)){
@@ -79,22 +79,29 @@ console.log(res);
   'employees.0.contact.1',
   'employees.0.contact.2.address' ]
 ```
+When `has(propertyName)` receives a string it calls `node.value[propertyName]`. If RegExp is used, all properties of `node.value` are iterated and tested against it.
 
-&#35;4. node.parent and node.get()
+&#35;4. node.key, node.parent and node.get()
 ```js
 var res = new Jef(sample1).filter(function(node){
 	if(node.key==='email' && node.value==='a@b.c'){
 		var res = [];
 		res.push('Email: key - '+node.key+', value: '+node.value+', path: '+node.path);
 
-		var emailContainer = node.parent;
-		res.push('Email parent: key - '+emailContainer.key+', type: '+emailContainer.getType()+', path: '+emailContainer.path);
+		if(node.parent){ // Test parent exists
+			var emailContainer = node.parent;
+			res.push('Email parent: key - '+emailContainer.key+', type: '+emailContainer.getType()+', path: '+emailContainer.path);
+		}
 
-		var contact = node.parent.parent;
-		res.push('Contact: key - '+contact.key+', type: '+contact.getType()+', path: '+contact.path);
+		if(node.parent && node.parent.parent){
+			var contact = node.parent.parent;
+			res.push('Contact: key - '+contact.key+', type: '+contact.getType()+', path: '+contact.path);
 
-		var city = contact.get('2.address.city');
-		res.push('City: key - '+city.key+', type: '+city.value+', path: '+city.path);
+			var city = contact.get('2.address.city');
+			if(city){ // Test relative path exists. node.get() returns 'undefined' otherwise.
+				res.push('City: key - '+city.key+', type: '+city.value+', path: '+city.path);
+			}
+		}
 
 		return res;
 	}
@@ -105,7 +112,6 @@ console.log(res);
     'Email parent: key - 1, type: object, path: employees.0.contact.1',
     'Contact: key - contact, type: array, path: employees.0.contact',
     'City: key - city, type: NY, path: employees.0.contact.2.address.city' ] ]
-
 ```
 
 &#35;5. Array handling
@@ -148,8 +154,8 @@ Wrapps a real Js node inside the tree that is traversed.
 * `node.pathArray` - string array containing the path to current node.
 * `node.level` - level of the current node. Root node has level 0.
 * `node.has(propertyName)` - returns true if `node.value` has that property. If a regular expression is passed, all `node.value` property names are iterated and matched against pattern. 
-* `node.get(relativePath)` - returns the `JsonNode` relative to the current node.
-* `node.getType()` - returns the type of `node.value` as one of 'string', 'array', 'object', 'function', 'undefined', 'number', 'null
+* `node.get(relativePath)` - returns the `JsonNode` relative to current node or 'undefined' if path cannot be found.
+* `node.getType()` - returns the type of `node.value` as one of 'string', 'array', 'object', 'function', 'undefined', 'number', 'null'.
 
 <a name="Links"></a>
 ## Links
