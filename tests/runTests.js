@@ -2,6 +2,7 @@
 
 var tests1 = require('./tests1-examples')();
 var tests2 = require('./tests2')();
+var Jef = require('json-easy-filter');
 
 
 
@@ -36,15 +37,13 @@ function runTests() {
 	console.log('tests2/test1: ' + passed(res));
 	res = tests2.test2();
 	console.log('tests2/test2: ' + passed(res));
+	res = tests2.test3();
+	console.log('tests2/test3: ' + passed(res));
 }
 
 
 runTests();
 
-//var r = /^(users|liviu)$/;
-//var x = r.test('users');
-//console.log(x);
-//console.log(r instanceof RegExp);
 
 
 
