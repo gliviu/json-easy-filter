@@ -8,13 +8,15 @@ var Tests1 = function(){
 	/**
 	 * All usernames.
 	 */
-	this.test1_filter = function() {
+	this.test1_filter = function(printResult) {
 		var res = new Jef(sample1).filter(function(node) {
-			if (node.hasOwnProperty('username')) {
+			if (node.has('username')) {
 				return node.value.username;
 			}
 		});
-		// console.log(res);
+		if(printResult){
+			console.log(res);
+		}
 		var testResult = res.toString() === [ 'john', 'adams', 'lee', 'scott', null ]
 		.toString();
 		return testResult;
@@ -23,13 +25,15 @@ var Tests1 = function(){
 	/**
 	 * Usernames with salary over 200.
 	 */
-	this.test2_filter = function() {
+	this.test2_filter = function(printResult) {
 		var res = new Jef(sample1).filter(function(node) {
 			if (node.has('salary') && node.value.salary > 200) {
 				return node.value.username + ' ' + node.value.salary;
 			}
 		});
-		// console.log(res);
+		if(printResult){
+			console.log(res);
+		}
 		var testResult = res.toString() === [ 'lee 300', 'scott 400' ].toString();
 		return testResult;
 	};
@@ -38,7 +42,7 @@ var Tests1 = function(){
 	this.test3_filter = function(printResult){
 		var res = new Jef(sample1).filter(function(node){
 			if(node.has(/^(phone|email|city)$/)){
-				return node.getPathStr();
+				return node.path;
 			}
 		});
 		if(printResult){
@@ -56,16 +60,16 @@ var Tests1 = function(){
 		var res = new Jef(sample1).filter(function(node){
 			if(node.key==='email' && node.value==='a@b.c'){
 				var res = [];
-				res.push('Email: key - '+node.key+', value: '+node.value+', path: '+node.getPathStr());
+				res.push('Email: key - '+node.key+', value: '+node.value+', path: '+node.path);
 
 				var emailContainer = node.parent;
-				res.push('Email parent: key - '+emailContainer.key+', type: '+emailContainer.getType()+', path: '+emailContainer.getPathStr());
+				res.push('Email parent: key - '+emailContainer.key+', type: '+emailContainer.getType()+', path: '+emailContainer.path);
 
 				var contact = node.parent.parent;
-				res.push('Contact: key - '+contact.key+', type: '+contact.getType()+', path: '+contact.getPathStr());
+				res.push('Contact: key - '+contact.key+', type: '+contact.getType()+', path: '+contact.path);
 
 				var city = contact.get('2.address.city');
-				res.push('City: key - '+city.key+', type: '+city.value+', path: '+city.getPathStr());
+				res.push('City: key - '+city.key+', type: '+city.value+', path: '+city.path);
 
 				return res;
 			}
@@ -87,9 +91,9 @@ var Tests1 = function(){
 		var res = new Jef(sample1).filter(function(node){
 			if(node.parent && node.parent.key==='employees'){
 				if(node.getType()==='object'){
-					return 'key: '+node.key+', username: '+node.value.username+', path: '+node.getPathStr();
+					return 'key: '+node.key+', username: '+node.value.username+', path: '+node.path;
 				} else{
-					return 'key: '+node.key+', username: '+node.value+', path: '+node.getPathStr();
+					return 'key: '+node.key+', username: '+node.value+', path: '+node.path;
 				}
 			}
 		});
@@ -160,7 +164,7 @@ var Tests1 = function(){
 				// Inside employee
 				if(!node.has('username') || node.get('username').getType()!=='string'){
 					valid = false;
-					info.push('Error: Employee '+node.getPathStr()+' does not have username');
+					info.push('Error: Employee '+node.path+' does not have username');
 				} else if(!node.has('gender')){
 					info.push('Warning: Employee '+node.value.username+' does not have gender');
 				}

@@ -20,32 +20,28 @@ var _getPathStr = function(path, delimiter){
 };
 
 var JsonNode = function(){
-	this._nodeHash = null;
-	this._pathStr = null;
 	this.key = null;
 	this.value = null;
 	this.parent = null;
 	this.isRoot = null;
-	this.path = [];
+	this.pathArray = [];
+	this.path = null;
 //	this.isLeaf = null;
 //	this.circular = null;
 	this.level = null;
-	this.getPathStr = function(delimiter){
-		return _getPathStr(this.path, delimiter);
-	};
 	this.get = function(relPathStr){
 		var absolutePath;
 		if(this.isRoot){
 			absolutePath = relPathStr;
 		} else{
-			absolutePath = this.getPathStr()+'.'+relPathStr;
+			absolutePath = this.path+'.'+relPathStr;
 		}
 		return this._nodeHash[ROOT_KEY+'.'+absolutePath];
 	};
 	this.filter = function(callback){
 		var result = [];
 		for(var absolutePath in this._nodeHash){
-			if(absolutePath.indexOf(this._pathStr)===0){
+			if(absolutePath.indexOf(this._internalPath)===0){
 				var node = this._nodeHash[absolutePath];
 				var resCallBack = callback(node);
 				if(resCallBack!==undefined){
@@ -59,7 +55,7 @@ var JsonNode = function(){
 	this.validate = function(callback){
 		var result = true;
 		for(var absolutePath in this._nodeHash){
-			if(absolutePath.indexOf(this._pathStr)===0){
+			if(absolutePath.indexOf(this._internalPath)===0){
 				var node = this._nodeHash[absolutePath];
 				
 				var resCallBack = callback(node);
@@ -102,10 +98,16 @@ var JsonNode = function(){
 	this.getType = function () {
 		return ({}).toString.call(this.value).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
 	};
-	
+
+	//////////////////////////
+	// Private stuff
+	//////////////////////////
+	this._nodeHash = null;
+	this._internalPath = null; // Just like this.path only it starts with ROOT_KEY.
+
 	this._debugNodeHash = function(){
 		for(var absolutePath in this._nodeHash){
-			if(absolutePath.indexOf(this._pathStr)===0){
+			if(absolutePath.indexOf(this._internalPath)===0){
 				console.log(absolutePath);
 			}
 		}
@@ -120,8 +122,9 @@ module.exports = function(obj){
 			// console.log(val);
 			var node = new JsonNode();
 			node._nodeHash = nodeHash;
-			node.path = this.path;
-			node._pathStr = ROOT_KEY+'.'+_getPathStr(node.path);
+			node.pathArray = this.path;
+			node.path = _getPathStr(node.pathArray);
+			node._internalPath = ROOT_KEY+'.'+_getPathStr(node.pathArray);
 			node.key = this.key;
 			node.value = this.node;
 			node.level = this.level;
@@ -131,11 +134,11 @@ module.exports = function(obj){
 			if(node.isRoot){
 				nodeHash[ROOT_KEY] = node;
 			} else{
-				nodeHash[ROOT_KEY+'.'+node.getPathStr()] = node;
+				nodeHash[ROOT_KEY+'.'+node.path] = node;
 			}
 			
 			// Parent
-			var parentPath = node.path.slice(0, node.path.length - 1);
+			var parentPath = node.pathArray.slice(0, node.pathArray.length - 1);
 			var parentNode;
 			if(parentPath.length === 0){
 				parentNode = nodeHash[ROOT_KEY];

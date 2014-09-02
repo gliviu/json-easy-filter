@@ -74,10 +74,10 @@ Wrapps a real Js node inside the tree that is traversed.
 * `node.key` - the key of the currently traversed object.
 * `node.value` - the value of the currently traversed object.
 * `node.isRoot` - true if current node is the root of the object tree.
-* `node.path` - string array containing the path to current node.
+* `node.path` - string representation of `node.pathArray`.
+* `node.pathArray` - string array containing the path to current node.
 * `node.level` - level of the current node. Root node has level 0.
 * `node.has(propertyName)` - returns true if `node.value` has that property. If a regular expression is passed, all `node.value` property names are iterated and matched against pattern. 
-* `node.getPathStr(delimiter)` - returns the string representation of `node.path`.
 * `node.get(relativePath)` - returns the `JsonNode` relative to the current node.
 * `node.getType()` - returns the type of `node.value` as one of 'string', 'array', 'object', 'function', 'undefined', 'number', 'null
 
