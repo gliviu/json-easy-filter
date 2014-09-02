@@ -24,7 +24,7 @@ var obj = {
 				v5: 400
 		}
 };
-var numbers = jef(obj).filter(function(node) {
+var numbers = new jef(obj).filter(function(node) {
 		if (typeof node.value==='number') {
 			return node.key + ' ' + node.value;
 		}
@@ -46,8 +46,8 @@ Use this <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/mast
 &#35;1. Display all usernames
 
 ```js
-var res = jef(sample1).filter(function(node) {
-	if (node.hasOwnProperty('username')) {
+var res = new Jef(sample1).filter(function(node) {
+	if (node.has('username')) {
 		return node.value.username;
 	}
 });
@@ -57,14 +57,84 @@ console.log(res);
 ```
 &#35;2. Employee with salary over a certain value
 ```js
-var res = jef(sample1).filter(function(node) {
+var res = new Jef(sample1).filter(function(node) {
 	if (node.has('salary') && node.value.salary > 200) {
 		return node.value.username + ' ' + node.value.salary;
 	}
 });
 console.log(res);
-
 >> [ 'lee 300', 'scott 400' ] 
+```
+
+&#35;3. Paths, has(RegExp)
+```js
+var res = new Jef(sample1).filter(function(node){
+	if(node.has(/^(phone|email|city)$/)){
+		return node.path;
+	}
+});
+console.log(res);
+>> 
+[ 'employees.0.contact.0',
+  'employees.0.contact.1',
+  'employees.0.contact.2.address' ]
+```
+
+&#35;4. node.parent and node.get()
+```js
+var res = new Jef(sample1).filter(function(node){
+	if(node.key==='email' && node.value==='a@b.c'){
+		var res = [];
+		res.push('Email: key - '+node.key+', value: '+node.value+', path: '+node.path);
+
+		var emailContainer = node.parent;
+		res.push('Email parent: key - '+emailContainer.key+', type: '+emailContainer.getType()+', path: '+emailContainer.path);
+
+		var contact = node.parent.parent;
+		res.push('Contact: key - '+contact.key+', type: '+contact.getType()+', path: '+contact.path);
+
+		var city = contact.get('2.address.city');
+		res.push('City: key - '+city.key+', type: '+city.value+', path: '+city.path);
+
+		return res;
+	}
+});
+console.log(res);
+>>
+[ [ 'Email: key - email, value: a@b.c, path: employees.0.contact.1.email',
+    'Email parent: key - 1, type: object, path: employees.0.contact.1',
+    'Contact: key - contact, type: array, path: employees.0.contact',
+    'City: key - city, type: NY, path: employees.0.contact.2.address.city' ] ]
+
+```
+
+&#35;5. Array handling
+```js
+var res = new Jef(sample1).filter(function(node){
+	if(node.parent && node.parent.key==='employees'){
+		if(node.getType()==='object'){
+			return 'key: '+node.key+', username: '+node.value.username+', path: '+node.path;
+		} else{
+			return 'key: '+node.key+', username: '+node.value+', path: '+node.path;
+		}
+	}
+});
+console.log(res);
+>>
+[ 'key: 0, username: john, path: departments.admin.employees.0',
+  'key: 1, username: lee, path: departments.admin.employees.1',
+  'key: 0, username: scott, path: departments.it.employees.0',
+  'key: 1, username: john, path: departments.it.employees.1',
+  'key: 2, username: lewis, path: departments.it.employees.2',
+  'key: 0, username: adams, path: departments.finance.employees.0',
+  'key: 1, username: scott, path: departments.finance.employees.1',
+  'key: 2, username: lee, path: departments.finance.employees.2',
+  'key: 0, username: john, path: employees.0',
+  'key: 1, username: adams, path: employees.1',
+  'key: 2, username: lee, path: employees.2',
+  'key: 3, username: scott, path: employees.3',
+  'key: 4, username: null, path: employees.4',
+  'key: 5, username: undefined, path: employees.5' ]
 ```
 
 <a name="API"></a>

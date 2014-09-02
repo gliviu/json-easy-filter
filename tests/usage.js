@@ -8,7 +8,7 @@ var obj = {
 				v5: 400
 		}
 };
-var numbers = jef(obj).filter(function(node) {
+var numbers = new jef(obj).filter(function(node) {
 		if (typeof node.value==='number') {
 			return node.key + ' ' + node.value;
 		}

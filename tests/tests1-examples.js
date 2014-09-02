@@ -6,7 +6,7 @@ var sample1 = require('./sampleData1.js');
 
 var Tests1 = function(){
 	/**
-	 * All usernames.
+	 * Display all usernames.
 	 */
 	this.test1_filter = function(printResult) {
 		var res = new Jef(sample1).filter(function(node) {
@@ -23,7 +23,7 @@ var Tests1 = function(){
 	};
 
 	/**
-	 * Usernames with salary over 200.
+	 * Employee with salary over a certain value.
 	 */
 	this.test2_filter = function(printResult) {
 		var res = new Jef(sample1).filter(function(node) {
@@ -85,7 +85,7 @@ var Tests1 = function(){
 	};
 
 	/**
-	 * Handling arrays
+	 * Array handling
 	 */
 	this.test5_filter = function(printResult) {
 		var res = new Jef(sample1).filter(function(node){
