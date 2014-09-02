@@ -1,6 +1,6 @@
 {
   "name": "json-easy-filter",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Javascript node module for convenient json filtering or programatic querying",
   "main": "index.js",
   "repository": {
