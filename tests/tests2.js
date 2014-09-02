@@ -43,6 +43,30 @@ var Tests2 = function(){
 		                                      'Email node - level=5, path: employees.0.contact.1.email, pathLength=5' ].toString();
 		return testResult;
 	};
+	this.test4 = function(printResult) {
+		var res = new Jef(sample1).filter(function(node) {
+			if(node.isLeaf && node.level>3) {
+				return node.path;
+			}
+		});
+		if(printResult){
+			console.log(res);
+		}
+		var testResult = res.toString() === [ 'departments.admin.employees.0',
+		                                      'departments.admin.employees.1',
+		                                      'departments.it.employees.0',
+		                                      'departments.it.employees.1',
+		                                      'departments.it.employees.2',
+		                                      'departments.finance.employees.0',
+		                                      'departments.finance.employees.1',
+		                                      'departments.finance.employees.2',
+		                                      'employees.0.contact.0.phone',
+		                                      'employees.0.contact.1.email',
+		                                      'employees.0.contact.2.type',
+		                                      'employees.0.contact.2.address.city',
+		                                      'employees.0.contact.2.address.country' ].toString();
+		return testResult;
+	};
 	
 };
 

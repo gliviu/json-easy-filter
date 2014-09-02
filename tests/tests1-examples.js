@@ -38,19 +38,25 @@ var Tests1 = function(){
 		return testResult;
 	};
 
-	// Paths, node.has(RegExp)
+	// Paths, node.has(RegExp), level
 	this.test3_filter = function(printResult){
 		var res = new Jef(sample1).filter(function(node){
 			if(node.has(/^(phone|email|city)$/)){
-				return node.path;
+				return 'contact: '+node.path;
+			}
+			if(node.pathArray[0]==='departments' && node.pathArray[1]==='admin' && node.level===3){
+				return 'department '+node.key+': '+node.value;
 			}
 		});
 		if(printResult){
 			console.log(res);
 		}
-		var testResult = res.toString() === [ 'employees.0.contact.0',
-		                                      'employees.0.contact.1',
-		                                      'employees.0.contact.2.address' ].toString();
+		var testResult = res.toString() === [ 'department name: Administrative',
+		                                      'department manager: john',
+		                                      'department employees: john,lee',
+		                                      'contact: employees.0.contact.0',
+		                                      'contact: employees.0.contact.1',
+		                                      'contact: employees.0.contact.2.address' ].toString();
 		return testResult;
 	};
 
@@ -123,6 +129,42 @@ var Tests1 = function(){
 		return testResult;
 	};
 
+	/**
+	 * Circular references
+	 */
+	this.test6_filter = function(printResult) {
+		var data = {
+			x: {
+				y: null  
+			},
+			z: null,
+			t: null
+		};
+		data.z = data.x;
+		data.x.y = data.z;
+		data.t = data.z;
+		var res = new Jef(data).filter(function(node) {
+			if(node.isRoot){
+				return 'root';
+			} else if (node.isCircular) {
+				return 'circular key: '+node.key + ', path: '+node.path;
+			} else{
+				return 'key: '+node.key + ', path: '+node.path;
+			}
+		});
+		if(printResult){
+			console.log(res);
+		}
+		var testResult = res.toString() === [ 'root',
+		                                      'key: x, path: x',
+		                                      'circular key: y, path: x.y',
+		                                      'key: z, path: z',
+		                                      'circular key: y, path: z.y',
+		                                      'key: t, path: t',
+		                                      'circular key: y, path: t.y' ].toString();
+		return testResult;
+	};
+
 
 	/**
 	 * Check each department has manager
@@ -134,9 +176,8 @@ var Tests1 = function(){
 			}
 		});
 		if(printResult){
-			console.log(res.toString());
+			console.log(res);
 		}
-		// console.log(res);
 		var testResult = res.toString() === false.toString();
 		return testResult;
 	};
@@ -144,7 +185,7 @@ var Tests1 = function(){
 
 
 	/**
-	 * Validate departments and employees
+	 * Validation info
 	 */
 	this.test2_validate = function(printResult) {
 		var info = [];
@@ -179,7 +220,7 @@ var Tests1 = function(){
 			return valid;
 		});
 		if(printResult){
-			console.log(res.toString());
+			console.log(res);
 			console.log(info);
 		}
 		var testResult1 = res.toString() === false.toString();

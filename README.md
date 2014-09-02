@@ -42,7 +42,7 @@ Check out the [API](#API) for more info.
 ## Examples
 Use this <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/master/tests/sampleData1.js" target="_blank">sample</a> data to follow the examples.
 
-
+### Filter
 &#35;1. node.has()
 
 ```js
@@ -66,18 +66,24 @@ console.log(res);
 >> [ 'lee 300', 'scott 400' ] 
 ```
 
-&#35;3. Paths, node.has(RegExp)
+&#35;3. Paths, node.has(RegExp), level
 ```js
 var res = new Jef(sample1).filter(function(node){
 	if(node.has(/^(phone|email|city)$/)){
-		return node.path;
+		return 'contact: '+node.path;
+	}
+	if(node.pathArray[0]==='departments' && node.pathArray[1]==='admin' && node.level===3){
+		return 'department '+node.key+': '+node.value;
 	}
 });
 console.log(res);
 >> 
-[ 'employees.0.contact.0',
-  'employees.0.contact.1',
-  'employees.0.contact.2.address' ]
+[ 'department name: Administrative',
+  'department manager: john',
+  'department employees: john,lee',
+  'contact: employees.0.contact.0',
+  'contact: employees.0.contact.1',
+  'contact: employees.0.contact.2.address' ]
 ```
 When `has(propertyName)` receives a string it calls `node.value[propertyName]`. If RegExp is used, all properties of `node.value` are iterated and tested against it.
 
@@ -141,6 +147,97 @@ console.log(res);
   'key: 3, username: scott, path: employees.3',
   'key: 4, username: null, path: employees.4',
   'key: 5, username: undefined, path: employees.5' ]
+```
+&#35;6. Circular references
+```js
+var data = {
+	x: {
+		y: null  
+	},
+	z: null,
+	t: null
+};
+data.z = data.x;
+data.x.y = data.z;
+data.t = data.z;
+var res = new Jef(data).filter(function(node) {
+	if(node.isRoot){
+		return 'root';
+	} else if (node.isCircular) {
+		return 'circular key: '+node.key + ', path: '+node.path;
+	} else{
+		return 'key: '+node.key + ', path: '+node.path;
+	}
+});
+console.log(res);
+>>
+[ 'root',
+  'key: x, path: x',
+  'circular key: y, path: x.y',
+  'key: z, path: z',
+  'circular key: y, path: z.y',
+  'key: t, path: t',
+  'circular key: y, path: t.y' ]
+
+```
+
+### Validate
+&#35;1. Check each department has manager
+```js
+var res = new Jef(sample1).validate(function(node) {
+	if (node.parent && node.parent.key==='departments' && !node.has('manager')) {
+		return false;
+	}
+});
+console.log(res);
+>> false
+```
+&#35;2. Validation info
+```js
+var info = [];
+var res = new Jef(sample1).validate(function(node) {
+var valid = true;
+if (node.parent && node.parent.key==='departments' ) {
+	// Inside department
+	if(!node.has('manager')){
+		valid = false;
+		info.push('Error: '+node.key+' department is missing mandatory manager property');
+	}
+	if(!node.has('employees')){
+		valid = false;
+		info.push('Error: '+node.key+' department is missing mandatory employee list');
+	} else if(node.get('employees').getType()!=='array'){
+		valid = false;
+		info.push('Error: '+node.key+' department has wrong employee list type "'+node.get('employees').getType()+'"');
+	} else if(node.value.employees.length===0){
+		info.push('Warning: '+node.key+' department has no employees');
+	}
+}
+if (node.parent && node.parent.key==='employees' && node.getType()==='object') {
+	// Inside employee
+	if(!node.has('username') || node.get('username').getType()!=='string'){
+		valid = false;
+		info.push('Error: Employee '+node.path+' does not have username');
+	} else if(!node.has('gender')){
+		info.push('Warning: Employee '+node.value.username+' does not have gender');
+	}
+}
+
+return valid;
+});
+console.log(res.toString());
+console.log(info);
+>>
+false
+[ 'Error: marketing department is missing mandatory manager property',
+  'Warning: marketing department has no employees',
+  'Error: hr department is missing mandatory manager property',
+  'Error: hr department is missing mandatory employee list',
+  'Error: supply department is missing mandatory manager property',
+  'Error: supply department has wrong employee list type "string"',
+  'Warning: Employee scott does not have gender',
+  'Error: Employee employees.4 does not have username',
+  'Error: Employee employees.5 does not have username' ]
 ```
 
 <a name="API"></a>

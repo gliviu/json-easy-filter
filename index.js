@@ -26,8 +26,8 @@ var JsonNode = function(){
 	this.isRoot = null;
 	this.pathArray = [];
 	this.path = null;
-//	this.isLeaf = null;
-//	this.circular = null;
+	this.isLeaf = null;
+	this.isCircular = null;
 	this.level = null;
 	this.get = function(relPathStr){
 		var absolutePath;
@@ -128,6 +128,8 @@ module.exports = function(obj){
 			node.value = this.node;
 			node.level = this.level;
 			node.isRoot = this.isRoot;
+			node.isLeaf = this.isLeaf;
+			node.isCircular = this.circular;
 
 			// Internal path
 			if(this.level===0){
