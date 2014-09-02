@@ -172,6 +172,7 @@ var Tests1 = function(){
 	this.test1_validate = function(printResult) {
 		var res = new Jef(sample1).validate(function(node) {
 			if (node.parent && node.parent.key==='departments' && !node.has('manager')) {
+				// current department is missing the mandatory 'manager' property
 				return false;
 			}
 		});

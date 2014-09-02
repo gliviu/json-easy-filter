@@ -1,11 +1,9 @@
 json-easy-filter
 ================
 
-Javascript node module for convenient json filtering and programatic querying.
+Javascript node module for programatic filtering and validation of Json objects.
 
 For other similar projects see [Links](#Links) section.
-
-**Important.** This software is still in early development stage. 
 
 ## Installation
 ```shell
@@ -33,14 +31,13 @@ var numbers = new jef(obj).filter(function(node) {
 console.log(numbers);
 >> [ 'v1 100', 'v2 200', 'v4 300', 'v5 400' ]
 ```
-`filter(callback)` method will recursively traverse each node in `obj` and trigger the callback method.
-
-The `node` parameter received by callback is a wrapper around the real Js object. Get this object by using `node.key` and `node.value`.
+`filter()` will recursively traverse each node in `obj` and trigger the callback method.
+`node` parameter received by callback is a wrapper around the real Js object. Get this object by using `node.key` and `node.value`.
 Check out the [API](#API) for more info.
 
 
 ## Examples
-Use this <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/master/tests/sampleData1.js" target="_blank">sample</a> data to follow the examples.
+Use the <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/master/tests/sampleData1.js" target="_blank">sample</a> data to follow this section.
 
 ### Filter
 &#35;1. node.has()
@@ -85,7 +82,7 @@ console.log(res);
   'contact: employees.0.contact.1',
   'contact: employees.0.contact.2.address' ]
 ```
-When `has(propertyName)` receives a string it calls `node.value[propertyName]`. If RegExp is used, all properties of `node.value` are iterated and tested against it.
+When `has(propertyName)` receives a string it calls `node.value[propertyName]`. If RegExp is passed, all properties of `node.value` are iterated and tested against it.
 
 &#35;4. node.key, node.parent and node.get()
 ```js
@@ -182,10 +179,11 @@ console.log(res);
 ```
 
 ### Validate
-&#35;1. Check each department has manager
+&#35;1. node.validate()
 ```js
 var res = new Jef(sample1).validate(function(node) {
 	if (node.parent && node.parent.key==='departments' && !node.has('manager')) {
+		// current department is missing the mandatory 'manager' property
 		return false;
 	}
 });
@@ -239,7 +237,6 @@ false
   'Error: Employee employees.4 does not have username',
   'Error: Employee employees.5 does not have username' ]
 ```
-
 <a name="API"></a>
 ## API
 
