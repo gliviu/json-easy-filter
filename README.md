@@ -32,7 +32,7 @@ console.log(numbers);
 >> [ 'v1 100', 'v2 200', 'v4 300', 'v5 400' ]
 ```
 `filter()` will recursively traverse each node in `obj` and trigger the callback method.
-`node` parameter received by callback is a wrapper around the real Js object. Get this object by using `node.key` and `node.value`.
+`node` parameter received by callback is a wrapper around the real Js object which can be accessed using `node.key` and `node.value`.
 
 Check out the examples and [API](#API) for more info.
 
