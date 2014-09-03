@@ -19,7 +19,18 @@ var _getPathStr = function(path, delimiter){
 	return res;
 };
 
-var JsonNode = function(){
+var JefLocalContext = function(localNode, globalNode){
+	this.isRoot = false;
+	if(globalNode.path === localNode.path){
+		this.isRoot = true;
+	}
+	this.level = localNode.pathArray.length - globalNode.pathArray.length;
+	this.pathArray = localNode.pathArray.slice(globalNode.pathArray.length, localNode.pathArray.length);
+	this.path = _getPathStr(this.pathArray);
+};
+
+
+var JefNode = function(){
 	this.key = null;
 	this.value = null;
 	this.parent = null;
@@ -44,7 +55,7 @@ var JsonNode = function(){
 			if(absolutePath.indexOf(this._internalPath)===0){
 				var node = this._nodeHash[absolutePath];
 				
-				var resCallBack = callback(node, this._buildLocalContext(node));
+				var resCallBack = callback(node, new JefLocalContext(node, this));
 				if(resCallBack!==undefined){
 					result.push(resCallBack);
 				}
@@ -59,7 +70,7 @@ var JsonNode = function(){
 			if(absolutePath.indexOf(this._internalPath)===0){
 				var node = this._nodeHash[absolutePath];
 				
-				var resCallBack = callback(node, this._buildLocalContext(node));
+				var resCallBack = callback(node, new JefLocalContext(node, this));
 				if(resCallBack===false){
 					result = false;
 				}
@@ -106,21 +117,6 @@ var JsonNode = function(){
 	this._nodeHash = null;
 	this._internalPath = null; // Just like this.path only it starts with ROOT_KEY.
 
-	/**
-	 * Builds local context for sub queries/validators
-	 */
-	this._buildLocalContext = function(node){
-		var local = {};
-		local.isRoot = false;
-		if(this.path === node.path){
-			local.isRoot = true;
-		}
-		local.level = node.pathArray.length - this.pathArray.length;
-		local.pathArray = node.pathArray.slice(this.pathArray.length, node.pathArray.length);
-		local.path = _getPathStr(local.pathArray);
-		return local;
-	};
-
 	this._debugNodeHash = function(){
 		for(var absolutePath in this._nodeHash){
 			if(absolutePath.indexOf(this._internalPath)===0){
@@ -131,12 +127,12 @@ var JsonNode = function(){
 };
 
 
-var JsonEasyFilter = function(obj){
+var Jef = function(obj){
 	this._traverse = function(obj){
 		var nodeHash = {};
 		traverse(obj).forEach(function(val){
 			// console.log(val);
-			var node = new JsonNode();
+			var node = new JefNode();
 			node._nodeHash = nodeHash;
 			node.pathArray = this.path;
 			node.path = _getPathStr(node.pathArray);
@@ -184,4 +180,4 @@ var JsonEasyFilter = function(obj){
 	return this._build(obj);
 };
 
-module.exports = JsonEasyFilter;
+module.exports = Jef;

@@ -241,21 +241,29 @@ false
 <a name="API"></a>
 ## API
 
-`JsonEasyFilter(jsonData)` - traverses jsonData and builds a hash map of ``JsonNode`` objects. Returns the root node.
+**Jef class**
+* `Jef(jsonData)` - traverses jsonData and computes a collection of `JefNode` objects used later for filter/validate operations. Returns the root `JefNode`.
 
-**JsonNode**
+**JefNode class**
 Wrapps a real Js node inside the tree that is traversed.
 * `node.key` - the key of the currently traversed object.
 * `node.value` - the value of the currently traversed object.
 * `node.isRoot` - true if current node is the root of the object tree.
-* `node.path` - string representation of `node.pathArray`.
 * `node.pathArray` - string array containing the path to current node.
+* `node.path` - string representation of `node.pathArray`.
 * `node.level` - level of the current node. Root node has level 0.
 * `node.has(propertyName)` - returns true if `node.value` has that property. If a regular expression is passed, all `node.value` property names are iterated and matched against pattern. 
-* `node.get(relativePath)` - returns the `JsonNode` relative to current node or 'undefined' if path cannot be found.
+* `node.get(relativePath)` - returns the `JefNode` relative to current node or 'undefined' if path cannot be found.
 * `node.getType()` - returns the type of `node.value` as one of 'string', 'array', 'object', 'function', 'undefined', 'number', 'null'.
-* `node.filter(callback)` - traverses node's children and triggers `callback(childNode)`. The result of callback call is added to an array which is later returned by  filter method.
-* `node.validate(callback)` - traverses node's children and triggers `callback(childNode)`. If any of the calls to callback method returns `false`, validate method will also return `false`.
+* `node.filter(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. The result of callback call is added to an array which is later returned by filter method. When filter method is called for a node other than root, `localContext` holds info relative to that node. If it is called for root `localContext` is equivalent to `childNode`. See `JefLocalContext` class below.   
+* `node.validate(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. If any of the calls to callback method returns false, validate method will also return false. `localContext` is treated the same as for filter method.
+
+**JefLocalContext class**
+* `localContext.isRoot` - true if current node is the root of the object tree relative to current filter/validate operation.
+* `localContext.pathArray` - string array containing the path to current node relative to current filter/validate operation.
+* `localContext.path` - string representation of `localContext.pathArray`.
+* `localContext.level` - level of the current node relative to current filter/validate operation.
+
 
 <a name="Links"></a>
 ## Links
