@@ -43,7 +43,8 @@ var JsonNode = function(){
 		for(var absolutePath in this._nodeHash){
 			if(absolutePath.indexOf(this._internalPath)===0){
 				var node = this._nodeHash[absolutePath];
-				var resCallBack = callback(node);
+				
+				var resCallBack = callback(node, this._buildLocalContext(node));
 				if(resCallBack!==undefined){
 					result.push(resCallBack);
 				}
@@ -58,7 +59,7 @@ var JsonNode = function(){
 			if(absolutePath.indexOf(this._internalPath)===0){
 				var node = this._nodeHash[absolutePath];
 				
-				var resCallBack = callback(node);
+				var resCallBack = callback(node, this._buildLocalContext(node));
 				if(resCallBack===false){
 					result = false;
 				}
@@ -104,6 +105,21 @@ var JsonNode = function(){
 	//////////////////////////
 	this._nodeHash = null;
 	this._internalPath = null; // Just like this.path only it starts with ROOT_KEY.
+
+	/**
+	 * Builds local context for sub queries/validators
+	 */
+	this._buildLocalContext = function(node){
+		var local = {};
+		local.isRoot = false;
+		if(this.path === node.path){
+			local.isRoot = true;
+		}
+		local.level = node.pathArray.length - this.pathArray.length;
+		local.pathArray = node.pathArray.slice(this.pathArray.length, node.pathArray.length);
+		local.path = _getPathStr(local.pathArray);
+		return local;
+	};
 
 	this._debugNodeHash = function(){
 		for(var absolutePath in this._nodeHash){
