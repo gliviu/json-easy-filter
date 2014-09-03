@@ -28,12 +28,16 @@ function runTests() {
 	console.log('tests1/test5_filter: ' + passed(res));
 	res = tests1.test6_filter();
 	console.log('tests1/test6_filter: ' + passed(res));
+	res = tests1.test7_filter();
+	console.log('tests1/test7_filter: ' + passed(res));
 
 	console.log('\nTests1 - validate');
 	res = tests1.test1_validate();
 	console.log('tests1/test1_validate: ' + passed(res));
 	res = tests1.test2_validate();
 	console.log('tests1/test2_validate: ' + passed(res));
+	res = tests1.test3_validate();
+	console.log('tests1/test3_validate: ' + passed(res));
 	
 	console.log('\nTests2');
 	res = tests2.test1();

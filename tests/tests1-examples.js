@@ -165,9 +165,37 @@ var Tests1 = function(){
 		return testResult;
 	};
 
+	/**
+	 * Subfilters
+	 */
+	this.test7_filter = function(printResult) {
+		var res = new Jef(sample1).get('employees.0.contact').filter(function(node, local) {
+			if(node.key==='phone'){
+				return [
+				        'phone global context - isRoot: '+node.isRoot+', level: '+node.level+', path: "'+node.path+'"',
+				        'phone local context- isRoot: '+local.isRoot+', level: '+local.level+', path: "'+local.path+'"'
+				        ];
+			}
+			if(local.isRoot){
+				return [
+				        'contact global context - isRoot: '+node.isRoot+', level: '+node.level+', path: "'+node.path+'"',
+				        'contact local context- isRoot: '+local.isRoot+', level: '+local.level+', path: "'+local.path+'"'
+				        ];
+			}
+		});
+		if(printResult){
+			console.log(res);
+		}
+		var testResult = res.toString() === [ [ 'contact global context - isRoot: false, level: 3, path: "employees.0.contact"',
+		                                        'contact local context- isRoot: true, level: 0, path: ""' ],
+		                                        [ 'phone global context - isRoot: false, level: 5, path: "employees.0.contact.0.phone"',
+		                                          'phone local context- isRoot: false, level: 2, path: "0.phone"' ] ].toString();
+		return testResult;
+	};
+	
 
 	/**
-	 * Check each department has manager
+	 * node.validate()
 	 */
 	this.test1_validate = function(printResult) {
 		var res = new Jef(sample1).validate(function(node) {
@@ -182,8 +210,6 @@ var Tests1 = function(){
 		var testResult = res.toString() === false.toString();
 		return testResult;
 	};
-
-
 
 	/**
 	 * Validation info
@@ -234,6 +260,33 @@ var Tests1 = function(){
 		                                        'Warning: Employee scott does not have gender',
 		                                        'Error: Employee employees.4 does not have username',
 		                                        'Error: Employee employees.5 does not have username' ].toString();
+		return testResult1 && testResult2;
+	};
+
+	/**
+	 * Sub validator
+	 */
+	this.test3_validate = function(printResult) {
+		var info = [];
+		var res = new Jef(sample1).get('departments').validate(function(node, local) {
+			var valid = true;
+			if (local.level===1) {
+				// Inside department
+				if(!node.has('manager')){
+					valid = false;
+					info.push('Error: '+local.path+'('+node.path+')'+' department is missing mandatory manager property');
+				}
+			}
+			return valid;
+		});
+		if(printResult){
+			console.log(res);
+			console.log(info);
+		}
+		var testResult1 = res.toString() === false.toString();
+		var testResult2 = info.toString() === [ 'Error: marketing(departments.marketing) department is missing mandatory manager property',
+		                                        'Error: hr(departments.hr) department is missing mandatory manager property',
+		                                        'Error: supply(departments.supply) department is missing mandatory manager property' ].toString();
 		return testResult1 && testResult2;
 	};
 
