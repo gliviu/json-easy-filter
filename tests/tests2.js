@@ -5,12 +5,15 @@ var sample1 = require('./sampleData1.js');
 
 
 var Tests2 = function(){
-	this.test1 = function() {
+	this.test1 = function(printResult) {
 		var res = new Jef(sample1).get('departments.admin').filter(function(node) {
 			if (node.value.manager === 'john') {
 				return node.value.manager;
 			}
 		});
+		if(printResult){
+			console.log(res);
+		}
 		var testResult = res.toString() === [ 'john' ].toString();
 		return testResult;
 	};
@@ -65,6 +68,18 @@ var Tests2 = function(){
 		                                      'employees.0.contact.2.type',
 		                                      'employees.0.contact.2.address.city',
 		                                      'employees.0.contact.2.address.country' ].toString();
+		return testResult;
+	};
+	this.test5 = function(printResult) {
+		var res = new Jef({x: {y: 'z'}, A: {}}).filter(function(node) {
+			if (node.isLeaf) {
+				return node.path;
+			}
+		});
+		if(printResult){
+			console.log(res);
+		}
+		var testResult = res.toString() === [ 'x.y', 'A' ].toString();
 		return testResult;
 	};
 	
