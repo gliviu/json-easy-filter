@@ -1,5 +1,6 @@
 "use strict";
 
+var fs = require('fs');
 var Jef = require('json-easy-filter');
 var sample1 = require('./sampleData1.js');
 
@@ -82,6 +83,42 @@ var Tests2 = function(){
 		var testResult = res.toString() === [ 'x.y', 'A' ].toString();
 		return testResult;
 	};
+	// http://stackoverflow.com/questions/25678022/how-to-use-jquery-grep-to-filter-extremely-nested-json
+    this.test6 = function() {
+        var res = require('./tests2-test6-input');
+        var start = new Date('2015-01-03');
+        var end = new Date('2015-01-07');
+        var overlaps = new Jef(res).filter(function(node) {
+            if (node.has('requests')) {
+                var overlap = false;
+                node.value.requests.forEach(function(request){
+                    var pick = new Date(request.pickupdate);
+                    var ret = new Date(request.returndate);
+                    var noOverlap = (pick<start && ret<start ) || (pick>end && ret>end );
+                    if(!noOverlap){
+                        overlap = true;
+                    }
+                });
+                if(overlap){
+                    return node;
+                }
+            }
+        });
+        
+        // remove overlaps
+        overlaps.forEach(function(node){
+            var inventories = node.parent.value;
+            var index = inventories.indexOf(node.value);
+            inventories.splice(index, 1);
+        });
+        
+        if(false){
+            console.log(JSON.stringify(res, null, 4));
+        }
+        var expected = JSON.parse(fs.readFileSync('tests2-test6-expected.js', 'utf8'));
+        var testResult = JSON.stringify(res, null, 4) === JSON.stringify(expected, null, 4);
+        return testResult;
+    };
 	
 };
 

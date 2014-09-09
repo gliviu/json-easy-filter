@@ -48,8 +48,10 @@ function runTests() {
 	console.log('tests2/test3: ' + passed(res));
 	res = tests2.test4();
 	console.log('tests2/test4: ' + passed(res));
-	res = tests2.test5(false);
-	console.log('tests2/test5: ' + passed(res));
+    res = tests2.test5(false);
+    console.log('tests2/test5: ' + passed(res));
+    res = tests2.test6(false);
+    console.log('tests2/test6: ' + passed(res));
 }
 
 
