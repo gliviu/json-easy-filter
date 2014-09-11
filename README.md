@@ -34,6 +34,8 @@ console.log(numbers);
 `filter()` will recursively traverse each node in `obj` and trigger the callback method.
 `node` parameter received by callback is a wrapper around the real Js object which can be accessed using `node.key` and `node.value`.
 
+Similar to filter method, [validate()](#exValidate) helps validating the tree and [remove()](#exRemove) provides functionality for removing individual nodes. 
+
 Check out the examples and [API](#API) for more info.
 
 
@@ -179,6 +181,7 @@ console.log(res);
 
 ```
 
+<a name="exValidate"></a>
 ### Validate
 &#35;1. node.validate()
 ```js
@@ -238,6 +241,58 @@ false
   'Error: Employee employees.4 does not have username',
   'Error: Employee employees.5 does not have username' ]
 ```
+
+<a name="exRemove"></a>
+### Remove
+&#35;1. node.remove()
+```js
+var success = new Jef(sample).remove(function(node) {
+    if(node.parent && node.parent.key==='departments'){
+        var isITDepartment = node.has('name') && node.value.name==='IT'; 
+        if(isITDepartment){
+            // remove manager and first employee from IT department.
+            return [node.get('manager'), node.get('employees.0')] ;
+        } else{
+            // remove all but IT department
+            return node;
+        }
+    }
+    if(node.parent && node.parent.key==='employees' && node.getType()==='object'){
+        if(node.has('salary') && node.get('salary').getType()==='number' && node.value.salary<400){
+            return node;
+        }
+    }
+});
+console.log(JSON.stringify(sample, null, 4));
+console.log(success);
+>> 
+{
+    "departments": {
+        "it": {
+            "name": "IT",
+            "employees": [
+                "john",
+                "lewis"
+            ]
+        }
+    },
+    "employees": [
+        {
+            "username": "scott",
+            "firstName": "Scott",
+            "lastName": "SCOTT",
+            "salary": 400,
+            "birthDate": "1993/11/20"
+        },
+        {
+            "firstName": "Unknown2",
+            "lastName": "Unknown2"
+        }
+    ]
+}
+true
+```
+
 <a name="API"></a>
 ## API
 
@@ -259,6 +314,8 @@ Wrapps a real Js node inside the tree that is traversed.
 * `node.getType()` - returns the type of `node.value` as one of 'string', 'array', 'object', 'function', 'undefined', 'number', 'boolean', 'null'.
 * `node.filter(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. The result of callback call is added to an array which is later returned by filter method. When filter method is called for a node other than root, `localContext` holds info relative to that node. If it is called for root `localContext` is equivalent to `childNode`. See `JefLocalContext` class below.   
 * `node.validate(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. If any of the calls to callback method returns false, validate method will also return false. `localContext` is treated the same as for filter method.
+* `node.remove(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. Callback method is expected to return the nodes to be deleted. Either a JefNode or an array of JefNode objects may be returned. After traversal is completed the nodes are removed from Js tree. The root object is never deleted.
+`node.remove(callback)` returns: true in case of success; false if anything other than JefNode is returned by callback method.
 
 **JefLocalContext class**
 * `localContext.isRoot` - true if current node is the root of the object tree relative to current filter/validate operation.

@@ -1,0 +1,24 @@
+{
+    "departments": {
+        "it": {
+            "name": "IT",
+            "employees": [
+                "john",
+                "lewis"
+            ]
+        }
+    },
+    "employees": [
+        {
+            "username": "scott",
+            "firstName": "Scott",
+            "lastName": "SCOTT",
+            "salary": 400,
+            "birthDate": "1993/11/20"
+        },
+        {
+            "firstName": "Unknown2",
+            "lastName": "Unknown2"
+        }
+    ]
+}

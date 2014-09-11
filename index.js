@@ -66,19 +66,48 @@ var JefNode = function(){
 
 	this.validate = function(callback){
 		var result = true;
-		for(var absolutePath in this._nodeHash){
-			if(absolutePath.indexOf(this._internalPath)===0){
-				var node = this._nodeHash[absolutePath];
-				
-				var resCallBack = callback(node, new JefLocalContext(node, this));
-				if(resCallBack===false){
-					result = false;
-				}
-			}
-		}
+		this.filter(function(node, localContext){
+            var resCallBack = callback(node, localContext);
+            if(resCallBack===false){
+                result = false;
+            }
+		});
 		return result;
 	};
 
+    this.remove = function(callback){
+        var toDelete = this.filter(function(node, localContext){
+            return callback(node, localContext);
+        });
+        var successful = true;
+        // one toDelete element may be a JefNode or an array of JefNodes
+        // recurses into result and removes nodes. 
+        var removeNodes = function(node){
+            if(node instanceof Array){
+                node.forEach(function(arrayElem){
+                    removeNodes(arrayElem);
+                });
+            } else if(node instanceof JefNode){
+                if(node.isRoot){
+                    console.log("Root node cannot be deleted.");
+                    successful = false;
+                } else if(node.parent.getType()==='array'){
+                    var array = node.parent.value;
+                    var index = array.indexOf(node.value);
+                    array.splice(index, 1);
+                } else{
+                    delete node.parent.value[node.key]; 
+                }
+            } else{ 
+                console.log("Only JefNode objects must be returned from delete callback.");
+                successful = false;
+            }
+        };
+        removeNodes(toDelete);
+        
+        return successful;
+    };
+	
 	
 	this.has = function(key){
 		if(!this.value){

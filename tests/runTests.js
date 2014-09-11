@@ -39,7 +39,10 @@ function runTests() {
 	res = tests1.test3_validate();
 	console.log('tests1/test3_validate: ' + passed(res));
 	
-	console.log('\nTests2');
+    res = tests1.test1_delete();
+    console.log('tests1/test1_delete: ' + passed(res));
+
+    console.log('\nTests2');
 	res = tests2.test1();
 	console.log('tests2/test1: ' + passed(res));
 	res = tests2.test2();

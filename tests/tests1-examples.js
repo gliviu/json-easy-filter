@@ -1,5 +1,6 @@
 "use strict";
 
+var fs = require('fs');
 var Jef = require('json-easy-filter');
 var sample1 = require('./sampleData1.js');
 
@@ -290,6 +291,37 @@ var Tests1 = function(){
 		return testResult1 && testResult2;
 	};
 
+	/**
+	 * node.remove()
+	 */
+    this.test1_delete = function() {
+        var sample = JSON.parse(JSON.stringify(sample1));
+        var success = new Jef(sample).remove(function(node) {
+            if(node.parent && node.parent.key==='departments'){
+                var isITDepartment = node.has('name') && node.value.name==='IT'; 
+                if(isITDepartment){
+                    // remove manager and first employee from IT department.
+                    return [node.get('manager'), node.get('employees.0')] ;
+                } else{
+                    // remove all but IT department
+                    return node;
+                }
+            }
+            if(node.parent && node.parent.key==='employees' && node.getType()==='object'){
+                if(node.has('salary') && node.get('salary').getType()==='number' && node.value.salary<400){
+                    return node;
+                }
+            }
+        });
+        
+        if(false){
+            console.log(JSON.stringify(sample, null, 4));
+            console.log(success);
+        }
+        var expected = JSON.parse(fs.readFileSync('tests1-test1-delete-expected.json', 'utf8'));
+        var testResult = JSON.stringify(sample, null, 4) === JSON.stringify(expected, null, 4) && success;
+        return testResult;
+    };  
 
 
 };
