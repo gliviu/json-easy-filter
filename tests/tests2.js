@@ -76,25 +76,39 @@ var Tests2 = function () {
         ].toString();
         return testResult;
     };
+
+    // isLeaf
     this.test5 = function () {
-        var rees = new Jef({
+        var res = new Jef({
             x : {
                 y : 'z'
             },
-            A : {}
+            A : {},
+            b : [
+                    'b', {}, undefined, null, {
+                        b1 : 'ba',
+                        b2 : {
+                            b11 : {},
+                            b12 : null
+                        }
+                    }
+            ],
+            c : undefined,
+            d : null
         }).filter(function (node) {
             if (node.isLeaf) {
                 return node.path;
             }
         });
-        if (true) {
+        if (false) {
             console.log(res);
         }
         var testResult = res.toString() === [
-                'x.y', 'A'
+                'x.y', 'b.0', 'b.2', 'b.3', 'b.4.b1', 'b.4.b2.b12', 'c', 'd'
         ].toString();
         return testResult;
     };
+
     // http://stackoverflow.com/questions/25678022/how-to-use-jquery-grep-to-filter-extremely-nested-json
     this.test6 = function () {
         var sample = require('./tests2-test6-input');
@@ -123,6 +137,58 @@ var Tests2 = function () {
         var testResult = JSON.stringify(sample, null, 4) === JSON.stringify(expected, null, 4) && success;
         return testResult;
     };
+
+    /**
+     * Circular references
+     */
+    this.test7 = function () {
+        var data = {
+            x : {
+                a : {
+                    b : 'b'
+                },
+                y : undefined,
+                c : 'c',
+                arr : [
+                        'd', undefined, undefined
+                ]
+            },
+            z : undefined,
+            t : undefined
+        };
+        data.z = data.x;
+        data.x.y = data.z;
+        data.t = data.z;
+        data.x.arr[1] = data.t;
+        var res = new Jef(data).filter(function (node) {
+            if (node.isRoot) {
+                return 'root';
+            } else if (node.isCircular) {
+                return 'circular key: ' + node.key + ', path: ' + node.path;
+            } else {
+                return 'key: ' + node.key + ', path: ' + node.path;
+            }
+        });
+        if (false) {
+            console.log(res);
+        }
+        var testResult = res.toString() === [
+                'root',
+                'key: x, path: x',
+                'key: a, path: x.a',
+                'key: b, path: x.a.b',
+                'circular key: y, path: x.y',
+                'key: c, path: x.c',
+                'key: arr, path: x.arr',
+                'key: 0, path: x.arr.0',
+                'circular key: 1, path: x.arr.1',
+                'key: 2, path: x.arr.2',
+                'circular key: z, path: z',
+                'circular key: t, path: t'
+        ].toString();
+        return testResult;
+    };
+
 };
 
 module.exports = function () {

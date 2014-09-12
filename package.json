@@ -13,9 +13,6 @@
     "query",
     "validation"
   ],
-  "dependencies" :{
-	"traverse" : "0.6.6"
-  },
   "author": "Liviu Grigorescu",
   "license": "MIT"
 }

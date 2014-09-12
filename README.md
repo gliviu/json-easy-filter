@@ -307,7 +307,7 @@ Wrapps a real Js node inside the tree that is traversed.
 * `node.pathArray` - string array containing the path to current node.
 * `node.path` - string representation of `node.pathArray`.
 * `node.level` - level of the current node. Root node has level 0.
-* `node.isLeaf` - indicates a leaf node. For {x: '{y: 'z'}, A: {}}', 'A' is considered leaf node.
+* `node.isLeaf` - indicates a leaf node. For {x: '{y: 'z'}, A: {}}' only y: 'z' is considered leaf node.
 * `node.isCircular` - indicates a circular reference 
 * `node.has(propertyName)` - returns true if `node.value` has that property. If a regular expression is passed, all `node.value` property names are iterated and matched against pattern. 
 * `node.get(relativePath)` - returns the `JefNode` relative to current node or 'undefined' if path cannot be found.
