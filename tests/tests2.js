@@ -111,10 +111,10 @@ var Tests2 = function () {
 
     // http://stackoverflow.com/questions/25678022/how-to-use-jquery-grep-to-filter-extremely-nested-json
     this.test6 = function () {
-        var sample = require('./tests2-test6-input');
+        var data = require('./tests2-test6-input');
         var start = new Date('2015-01-03');
         var end = new Date('2015-01-07');
-        var success = new Jef(sample).remove(function (node) {
+        var success = new Jef(data).remove(function (node) {
             if (node.has('requests')) {
                 var requests = node.value.requests;
                 for (var i = 0; i < requests.length; i++) {
@@ -130,11 +130,11 @@ var Tests2 = function () {
         });
 
         if (false) {
-            console.log(JSON.stringify(sample, null, 4));
+            console.log(JSON.stringify(data, null, 4));
             console.log(success);
         }
         var expected = JSON.parse(fs.readFileSync('tests2-test6-expected.json', 'utf8'));
-        var testResult = JSON.stringify(sample, null, 4) === JSON.stringify(expected, null, 4) && success;
+        var testResult = JSON.stringify(data, null, 4) === JSON.stringify(expected, null, 4) && success;
         return testResult;
     };
 
