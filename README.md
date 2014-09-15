@@ -11,8 +11,9 @@ $ npm install json-easy-filter
 ```
 
 ## Usage
+[plunkr](http://plnkr.co/edit/yZ85mr)
 ```js
-var jef = require('json-easy-filter');
+var Jef = require('json-easy-filter');
 
 var obj = {
 		v1: 100,
@@ -22,7 +23,7 @@ var obj = {
 				v5: 400
 		}
 };
-var numbers = new jef(obj).filter(function(node) {
+var numbers = new Jef(obj).filter(function(node) {
 		if (typeof node.value==='number') {
 			return node.key + ' ' + node.value;
 		}
@@ -43,7 +44,7 @@ Check out the examples and [API](#API) for more info.
 Use the <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/master/tests/sampleData1.js" target="_blank">sample</a> data to follow this section.
 
 ### Filter
-&#35;1. node.has()
+&#35;1. node.has() [plunkr](http://plnkr.co/edit/nPwRhF)
 
 ```js
 var res = new Jef(sample1).filter(function(node) {
@@ -55,7 +56,7 @@ console.log(res);
 
 >> [ 'john', 'adams', 'lee', 'scott', null ] 
 ```
-&#35;2. node.value
+&#35;2. node.value [plunkr](http://plnkr.co/edit/x9Nq4z)
 ```js
 var res = new Jef(sample1).filter(function(node) {
 	if (node.has('salary') && node.value.salary > 200) {
@@ -66,7 +67,7 @@ console.log(res);
 >> [ 'lee 300', 'scott 400' ] 
 ```
 
-&#35;3. Paths, node.has(RegExp), level
+&#35;3. Paths, node.has(RegExp), level [plunkr](http://plnkr.co/edit/1t4DJ9)
 ```js
 var res = new Jef(sample1).filter(function(node){
 	if(node.has(/^(phone|email|city)$/)){
@@ -87,7 +88,7 @@ console.log(res);
 ```
 When `has(propertyName)` receives a string it calls `node.value[propertyName]`. If RegExp is passed, all properties of `node.value` are iterated and tested against it.
 
-&#35;4. node.key, node.parent and node.get()
+&#35;4. node.key, node.parent and node.get() [plunkr](http://plnkr.co/edit/zEusEK)
 ```js
 var res = new Jef(sample1).filter(function(node){
 	if(node.key==='email' && node.value==='a@b.c'){
@@ -120,7 +121,7 @@ console.log(res);
     'City: key - city, type: NY, path: employees.0.contact.2.address.city' ] ]
 ```
 
-&#35;5. Array handling
+&#35;5. Array handling [plunkr](http://plnkr.co/edit/lseyjv)
 ```js
 var res = new Jef(sample1).filter(function(node){
 	if(node.parent && node.parent.key==='employees'){
@@ -148,7 +149,7 @@ console.log(res);
   'key: 4, username: null, path: employees.4',
   'key: 5, username: undefined, path: employees.5' ]
 ```
-&#35;6. Circular references
+&#35;6. Circular references [plunkr](http://plnkr.co/edit/VdWlbg)
 ```js
 var data = {
 	x: {
@@ -171,19 +172,16 @@ var res = new Jef(data).filter(function(node) {
 });
 console.log(res);
 >>
-[ 'root',
-  'key: x, path: x',
-  'circular key: y, path: x.y',
-  'key: z, path: z',
-  'circular key: y, path: z.y',
-  'key: t, path: t',
-  'circular key: y, path: t.y' ]
-
+[   "root",
+    "key: x, path: x",
+    "circular key: y, path: x.y",
+    "circular key: z, path: z",
+    "circular key: t, path: t" ]
 ```
 
 <a name="exValidate"></a>
 ### Validate
-&#35;1. node.validate()
+&#35;1. node.validate() [plunkr](http://plnkr.co/edit/L7q3VH)
 ```js
 var res = new Jef(sample1).validate(function(node) {
 	if (node.parent && node.parent.key==='departments' && !node.has('manager')) {
@@ -194,7 +192,7 @@ var res = new Jef(sample1).validate(function(node) {
 console.log(res);
 >> false
 ```
-&#35;2. Validation info
+&#35;2. Validation info [plunkr](http://plnkr.co/edit/EVqTtV)
 ```js
 var info = [];
 var res = new Jef(sample1).validate(function(node) {
@@ -241,11 +239,35 @@ false
   'Error: Employee employees.4 does not have username',
   'Error: Employee employees.5 does not have username' ]
 ```
+&#35;3. Nested validator [plunkr](http://plnkr.co/edit/Z43d0e)
+```js
+var info = [];
+var res = new Jef(sample1).get('departments').validate(function (node, local) {
+    var valid = true;
+    if (local.level === 1) {
+        // Inside department
+        if (!node.has('manager')) {
+            valid = false;
+            info.push('Error: ' + local.path + '(' + node.path + ')' + ' department is missing mandatory manager property');
+        }
+    }
+    return valid;
+});
+console.log(res);
+console.log(info);
+>>
+false
+[ 'Error: marketing(departments.marketing) department is missing mandatory manager property',
+  'Error: hr(departments.hr) department is missing mandatory manager property',
+  'Error: supply(departments.supply) department is missing mandatory manager property' ]
+```
+
 
 <a name="exRemove"></a>
 ### Remove
-&#35;1. node.remove()
+&#35;1. node.remove() [plunkr](http://plnkr.co/edit/UzVghb)
 ```js
+var sample = JSON.parse(JSON.stringify(sample1));
 var success = new Jef(sample).remove(function(node) {
     if(node.parent && node.parent.key==='departments'){
         var isITDepartment = node.has('name') && node.value.name==='IT'; 

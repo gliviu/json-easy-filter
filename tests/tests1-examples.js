@@ -282,7 +282,7 @@ var Tests1 = function () {
     /**
      * Sub validator
      */
-    this.test3_validate = function (printResult) {
+    this.test3_validate = function () {
         var info = [];
         var res = new Jef(sample1).get('departments').validate(function (node, local) {
             var valid = true;
@@ -295,7 +295,7 @@ var Tests1 = function () {
             }
             return valid;
         });
-        if (printResult) {
+        if (false) {
             console.log(res);
             console.log(info);
         }
