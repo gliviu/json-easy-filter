@@ -239,7 +239,7 @@ false
   'Error: Employee employees.4 does not have username',
   'Error: Employee employees.5 does not have username' ]
 ```
-&#35;3. Nested validator [plunkr](http://plnkr.co/edit/Z43d0e)
+&#35;3. Sub validator [plunkr](http://plnkr.co/edit/Z43d0e)
 ```js
 var info = [];
 var res = new Jef(sample1).get('departments').validate(function (node, local) {
