@@ -352,4 +352,5 @@ Wrapps a real Js node inside the tree that is traversed.
 ## Links
 * XPath like query for json - <a href="https://www.npmjs.org/package/JSONPath" target="_blank">JsonPath</a>, <a href="https://www.npmjs.org/package/spahql" target="_blank">SpahQL</a>
 *  Filter, map, reduce - <a href="https://www.npmjs.org/package/traverse" target="_blank">traverse</a>
-* Json validator - <a href="https://www.npmjs.org/package/json-filter" target="_blank">json-filter</a>
+* Json validator - <a href="https://www.npmjs.org/package/json-filter" target="_blank">json-filter</a>, <a href="https://www.npmjs.org/package/json-validator" target="_blank">json-validator</a>
+* Linq - <a href="http://jlinq.codeplex.com/wikipage?title=Command%20List" target="_blank">jLinq</a>, <a href="http://jslinq.codeplex.com/" target="_blank">jslinq</a>
