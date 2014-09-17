@@ -331,9 +331,11 @@ Wrapps a real Js node inside the tree that is traversed.
 * `node.level` - level of the current node. Root node has level 0.
 * `node.isLeaf` - indicates a leaf node. For {x: '{y: 'z'}, A: {}}' only y: 'z' is considered leaf node.
 * `node.isCircular` - indicates a circular reference 
+* `node.count` - number of first level child nodes. For array indicates nuber of elements. 
 * `node.has(propertyName)` - returns true if `node.value` has that property. If a regular expression is passed, all `node.value` property names are iterated and matched against pattern. 
 * `node.get(relativePath)` - returns the `JefNode` relative to current node or 'undefined' if path cannot be found.
 * `node.getType()` - returns the type of `node.value` as one of 'string', 'array', 'object', 'function', 'undefined', 'number', 'boolean', 'null'.
+* `node.isEmpty()` - returns true if this object/array has no children/elements.
 * `node.filter(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. The result of callback call is added to an array which is later returned by filter method. When filter method is called for a node other than root, `localContext` holds info relative to that node. If it is called for root `localContext` is equivalent to `childNode`. See `JefLocalContext` class below.   
 * `node.validate(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. If any of the calls to callback method returns false, validate method will also return false. `localContext` is treated the same as for filter method.
 * `node.remove(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. Callback method is expected to return the nodes to be deleted. Either a JefNode or an array of JefNode objects may be returned. After traversal is completed the nodes are removed from Js tree. The root object is never deleted.

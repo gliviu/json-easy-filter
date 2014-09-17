@@ -188,6 +188,30 @@ var Tests2 = function () {
         ].toString();
         return testResult;
     };
+    // isEmpty() and count
+    this.test8 = function () {
+        var res = new Jef({
+            x : {
+                y : 'z',
+                t : {}
+            },
+            a : [],
+            b : [
+                    'p1', {}, {
+                        p4 : 'p4'
+                    }
+            ]
+        }).filter(function (node) {
+            return node.path + ' ' + node.count + ' ' + node.isEmpty();
+        });
+        if (false) {
+            console.log(res);
+        }
+        var testResult = res.toString() === [
+                ' 3 false', 'x 2 false', 'x.y 0 true', 'x.t 0 true', 'a 0 true', 'b 3 false', 'b.0 0 true', 'b.1 0 true', 'b.2 1 false', 'b.2.p4 0 true'
+        ].toString();
+        return testResult;
+    };
 
 };
 

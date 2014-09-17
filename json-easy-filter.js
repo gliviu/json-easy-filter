@@ -36,6 +36,10 @@ Jef = function () {
         this.isLeaf = null;
         this.isCircular = null;
         this.level = null;
+        this.count = 0;
+        this.isEmpty = function(){
+            return this.count===0;
+        };
         this.get = function (relPathStr) {
             var absolutePath;
             if (this.isRoot) {
@@ -206,7 +210,6 @@ Jef = function () {
         this._traverse = function (obj) {
             var nodeHash = {};
             traverse(obj, function (key, val, path, parent, level, isRoot, isLeaf, isCircular) {
-                // console.log(val);
                 var node = new JefNode();
                 node._nodeHash = nodeHash;
                 node.pathArray = path;
@@ -218,30 +221,36 @@ Jef = function () {
                 node.isLeaf = isLeaf;
                 node.isCircular = isCircular;
 
-                // Internal path
+                // internal path
                 if (node.level === 0) {
                     node._internalPath = rootkey;
                 } else {
                     node._internalPath = rootkey + '.' + _getPathStr(node.pathArray);
                 }
 
-                // Hash
+                // hash
                 if (node.isRoot) {
                     nodeHash[rootkey] = node;
                 } else {
                     nodeHash[rootkey + '.' + node.path] = node;
                 }
 
-                // Parent
+                // parent
                 var parentPath = node.pathArray.slice(0, node.pathArray.length - 1);
                 var parentNode;
                 if (parentPath.length === 0) {
+                    // root node
                     parentNode = nodeHash[rootkey];
                 } else {
                     parentNode = nodeHash[rootkey + '.' + _getPathStr(parentPath)];
                 }
                 if (parentNode) {
                     node.parent = parentNode;
+                }
+                
+                // count
+                if(!node.isRoot){
+                    node.parent.count++;
                 }
             });
             return nodeHash;
