@@ -1,7 +1,7 @@
 "use strict";
 
 var fs = require('fs');
-var Jef = require('json-easy-filter');
+var Jef = require('../index');
 var sample1 = require('./sampleData1.js');
 
 var Tests2 = function () {
@@ -133,7 +133,7 @@ var Tests2 = function () {
             console.log(JSON.stringify(data, null, 4));
             console.log(success);
         }
-        var expected = JSON.parse(fs.readFileSync('tests2-test6-expected.json', 'utf8'));
+        var expected = JSON.parse(fs.readFileSync(__dirname+'/tests2-test6-expected.json', 'utf8'));
         var testResult = JSON.stringify(data, null, 4) === JSON.stringify(expected, null, 4) && success;
         return testResult;
     };
