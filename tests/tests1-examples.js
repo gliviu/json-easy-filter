@@ -74,12 +74,12 @@ var Tests1 = function () {
 
                 if (node.parent) { // Test parent exists
                     var emailContainer = node.parent;
-                    res.push('Email parent: key - ' + emailContainer.key + ', type: ' + emailContainer.getType() + ', path: ' + emailContainer.path);
+                    res.push('Email parent: key - ' + emailContainer.key + ', type: ' + emailContainer.type() + ', path: ' + emailContainer.path);
                 }
 
                 if (node.parent && node.parent.parent) {
                     var contact = node.parent.parent;
-                    res.push('Contact: key - ' + contact.key + ', type: ' + contact.getType() + ', path: ' + contact.path);
+                    res.push('Contact: key - ' + contact.key + ', type: ' + contact.type() + ', path: ' + contact.path);
 
                     var city = contact.get('2.address.city');
                     if (city) { // Test relative path exists. node.get() returns
@@ -111,7 +111,7 @@ var Tests1 = function () {
     this.test5_filter = function (printResult) {
         var res = new Jef(sample1).filter(function (node) {
             if (node.parent && node.parent.key === 'employees') {
-                if (node.getType() === 'object') {
+                if (node.type() === 'object') {
                     return 'key: ' + node.key + ', username: ' + node.value.username + ', path: ' + node.path;
                 } else {
                     return 'key: ' + node.key + ', username: ' + node.value + ', path: ' + node.path;
@@ -241,16 +241,16 @@ var Tests1 = function () {
                 if (!node.has('employees')) {
                     valid = false;
                     info.push('Error: ' + node.key + ' department is missing mandatory employee list');
-                } else if (node.get('employees').getType() !== 'array') {
+                } else if (node.get('employees').type() !== 'array') {
                     valid = false;
-                    info.push('Error: ' + node.key + ' department has wrong employee list type "' + node.get('employees').getType() + '"');
+                    info.push('Error: ' + node.key + ' department has wrong employee list type "' + node.get('employees').type() + '"');
                 } else if (node.value.employees.length === 0) {
                     info.push('Warning: ' + node.key + ' department has no employees');
                 }
             }
-            if (node.parent && node.parent.key === 'employees' && node.getType() === 'object') {
+            if (node.parent && node.parent.key === 'employees' && node.type() === 'object') {
                 // Inside employee
-                if (!node.has('username') || node.get('username').getType() !== 'string') {
+                if (!node.has('username') || node.get('username').type() !== 'string') {
                     valid = false;
                     info.push('Error: Employee ' + node.path + ' does not have username');
                 } else if (!node.has('gender')) {
@@ -326,8 +326,8 @@ var Tests1 = function () {
                     return node;
                 }
             }
-            if (node.parent && node.parent.key === 'employees' && node.getType() === 'object') {
-                if (node.has('salary') && node.get('salary').getType() === 'number' && node.value.salary < 400) {
+            if (node.parent && node.parent.key === 'employees' && node.type() === 'object') {
+                if (node.has('salary') && node.get('salary').type() === 'number' && node.value.salary < 400) {
                     return node;
                 }
             }

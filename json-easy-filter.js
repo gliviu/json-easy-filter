@@ -91,7 +91,7 @@ Jef = function () {
                     if (node.isRoot) {
                         console.log("Root node cannot be deleted.");
                         successful = false;
-                    } else if (node.parent.getType() === 'array') {
+                    } else if (node.parent.type() === 'array') {
                         var array = node.parent.value;
                         var index = array.indexOf(node.value);
                         array.splice(index, 1);
@@ -113,7 +113,7 @@ Jef = function () {
                 return false;
             }
             if (key instanceof RegExp) {
-                if (this.getType() === 'object') {
+                if (this.type() === 'object') {
                     for ( var k in this.value) {
                         if (key.test(k)) {
                             return true;
@@ -133,9 +133,15 @@ Jef = function () {
         };
 
         /**
-         * Returns one of string, array, object, function, undefined, number
+         * Deprecated.
          */
         this.getType = function () {
+            return this.type();
+        };
+        /**
+         * Returns one of 'string', 'array', 'object', 'function', 'number', 'boolean', 'undefined', 'null'
+         */
+        this.type = function () {
             return ({}).toString.call(this.value).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
         };
 

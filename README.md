@@ -97,12 +97,12 @@ var res = new Jef(sample1).filter(function(node){
 
 		if(node.parent){ // Test parent exists
 			var emailContainer = node.parent;
-			res.push('Email parent: key - '+emailContainer.key+', type: '+emailContainer.getType()+', path: '+emailContainer.path);
+			res.push('Email parent: key - '+emailContainer.key+', type: '+emailContainer.type()+', path: '+emailContainer.path);
 		}
 
 		if(node.parent && node.parent.parent){
 			var contact = node.parent.parent;
-			res.push('Contact: key - '+contact.key+', type: '+contact.getType()+', path: '+contact.path);
+			res.push('Contact: key - '+contact.key+', type: '+contact.type()+', path: '+contact.path);
 
 			var city = contact.get('2.address.city');
 			if(city){ // Test relative path exists. node.get() returns 'undefined' otherwise.
@@ -125,7 +125,7 @@ console.log(res);
 ```js
 var res = new Jef(sample1).filter(function(node){
 	if(node.parent && node.parent.key==='employees'){
-		if(node.getType()==='object'){
+		if(node.type()==='object'){
 			return 'key: '+node.key+', username: '+node.value.username+', path: '+node.path;
 		} else{
 			return 'key: '+node.key+', username: '+node.value+', path: '+node.path;
@@ -206,16 +206,16 @@ if (node.parent && node.parent.key==='departments' ) {
 	if(!node.has('employees')){
 		valid = false;
 		info.push('Error: '+node.key+' department is missing mandatory employee list');
-	} else if(node.get('employees').getType()!=='array'){
+	} else if(node.get('employees').type()!=='array'){
 		valid = false;
-		info.push('Error: '+node.key+' department has wrong employee list type "'+node.get('employees').getType()+'"');
+		info.push('Error: '+node.key+' department has wrong employee list type "'+node.get('employees').type()+'"');
 	} else if(node.value.employees.length===0){
 		info.push('Warning: '+node.key+' department has no employees');
 	}
 }
-if (node.parent && node.parent.key==='employees' && node.getType()==='object') {
+if (node.parent && node.parent.key==='employees' && node.type()==='object') {
 	// Inside employee
-	if(!node.has('username') || node.get('username').getType()!=='string'){
+	if(!node.has('username') || node.get('username').type()!=='string'){
 		valid = false;
 		info.push('Error: Employee '+node.path+' does not have username');
 	} else if(!node.has('gender')){
@@ -279,8 +279,8 @@ var success = new Jef(sample).remove(function(node) {
             return node;
         }
     }
-    if(node.parent && node.parent.key==='employees' && node.getType()==='object'){
-        if(node.has('salary') && node.get('salary').getType()==='number' && node.value.salary<400){
+    if(node.parent && node.parent.key==='employees' && node.type()==='object'){
+        if(node.has('salary') && node.get('salary').type()==='number' && node.value.salary<400){
             return node;
         }
     }
@@ -334,7 +334,7 @@ Wrapps a real Js node inside the tree that is traversed.
 * `node.count` - number of first level child nodes. For array indicates nuber of elements. 
 * `node.has(propertyName)` - returns true if `node.value` has that property. If a regular expression is passed, all `node.value` property names are iterated and matched against pattern. 
 * `node.get(relativePath)` - returns the `JefNode` relative to current node or 'undefined' if path cannot be found.
-* `node.getType()` - returns the type of `node.value` as one of 'string', 'array', 'object', 'function', 'undefined', 'number', 'boolean', 'null'.
+* `node.type()` - returns the type of `node.value` as one of 'string', 'array', 'object', 'function', 'number', 'boolean', 'undefined', 'null'.
 * `node.isEmpty()` - returns true if this object/array has no children/elements.
 * `node.filter(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. The result of callback call is added to an array which is later returned by filter method. When filter method is called for a node other than root, `localContext` holds info relative to that node. If it is called for root `localContext` is equivalent to `childNode`. See `JefLocalContext` class below.   
 * `node.validate(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. If any of the calls to callback method returns false, validate method will also return false. `localContext` is treated the same as for filter method.
