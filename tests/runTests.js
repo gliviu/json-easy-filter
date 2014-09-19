@@ -9,7 +9,11 @@ var count = 0, failed = 0, successful = 0;
 
 function passed (value) {
     count++;
-    value?successful++:failed++;
+    if(value){
+        successful++;
+    } else{
+        failed++;
+    }
     return value ? 'Passed'.green : '!!!!FAILED!!!!'.yellow;
 }
 
