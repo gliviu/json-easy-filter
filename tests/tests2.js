@@ -133,7 +133,7 @@ var Tests2 = function () {
             console.log(JSON.stringify(data, null, 4));
             console.log(success);
         }
-        var expected = JSON.parse(fs.readFileSync(__dirname+'/tests2-test6-expected.json', 'utf8'));
+        var expected = JSON.parse(fs.readFileSync(__dirname + '/tests2-test6-expected.json', 'utf8'));
         var testResult = JSON.stringify(data, null, 4) === JSON.stringify(expected, null, 4) && success;
         return testResult;
     };
@@ -213,7 +213,47 @@ var Tests2 = function () {
         }
         var testResult = res.toString() === [
                 ' 3 false', 'x 2 false', 'x.y 0 true', 'x.t 0 true', 'a 0 true', 'b 3 false', 'b.0 0 true', 'b.1 0 true', 'b.2 1 false', 'b.2.p4 0 true'
-        ].toString() && res2.toString() === [ ' 0 true' ].toString();
+        ].toString() && res2.toString() === [
+            ' 0 true'
+        ].toString();
+        return testResult;
+    };
+
+    // get('')
+    this.test9 = function () {
+        var jef = new Jef({
+            x : {
+                y : 'z',
+                t : {}
+            },
+            a : [
+                    'a', 'b'
+            ]
+        });
+        var res1 = jef.get('');
+        var res2 = jef.get('x').get('');
+        var res3 = jef.get('a.1').get('');
+        var res4 = jef.get('a.1').get();
+        if (false) {
+            // A
+            console.log(res1.isRoot);
+            console.log(JSON.stringify(res1.value));
+            // B
+            console.log(res2.isRoot);
+            console.log(JSON.stringify(res2.value));
+            // C
+            console.log(res3.isRoot);
+            console.log(JSON.stringify(res3.value));
+            // D
+            console.log(res4.isRoot);
+            console.log(JSON.stringify(res4.value));
+        }
+        debugger;
+        var resA = res1.isRoot && JSON.stringify(res1.value)===JSON.stringify(JSON.parse('{"x":{"y":"z","t":{}},"a":["a","b"]}'))
+        var resB = !res2.isRoot && JSON.stringify(res2.value)===JSON.stringify(JSON.parse('{"y":"z","t":{}}'))
+        var resC = !res3.isRoot && JSON.stringify(res3.value)===JSON.stringify(JSON.parse('"b"'))
+        var resD = !res4.isRoot && JSON.stringify(res4.value)===JSON.stringify(JSON.parse('"b"'))
+        var testResult = resA && resB && resC && resD;
         return testResult;
     };
 

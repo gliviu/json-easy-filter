@@ -41,6 +41,9 @@ module.exports = function () {
             return this.count===0;
         };
         this.get = function (relPathStr) {
+            if(!relPathStr){
+                return this;
+            }
             var absolutePath;
             if (this.isRoot) {
                 absolutePath = relPathStr;
