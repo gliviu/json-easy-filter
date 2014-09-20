@@ -27,7 +27,7 @@ var Tests2 = function () {
         var testResult = res.toString() === true.toString();
         return testResult;
     };
-    this.test3 = function (printResult) {
+    this.test3 = function () {
         var res = new Jef(sample1).filter(function (node) {
             if (node.isRoot) {
                 return 'Root node - level=' + node.level + ', path: ' + node.path + ', pathLength=' + node.pathArray.length;
@@ -40,7 +40,7 @@ var Tests2 = function () {
                 return 'Email node - level=' + email.level + ', path: ' + email.path + ', pathLength=' + email.pathArray.length;
             }
         });
-        if (printResult) {
+        if (false) {
             console.log(res);
         }
         var testResult = res.toString() === [

@@ -1,7 +1,6 @@
 module.exports = function () {
     "use strict";
 
-
     var _getPathStr = function (path, delimiter) {
         if (!delimiter) {
             delimiter = '.';
@@ -37,11 +36,11 @@ module.exports = function () {
         this.isCircular = null;
         this.level = null;
         this.count = 0;
-        this.isEmpty = function(){
-            return this.count===0;
+        this.isEmpty = function () {
+            return this.count === 0;
         };
         this.get = function (relPathStr) {
-            if(!relPathStr){
+            if (!relPathStr) {
                 return this;
             }
             var absolutePath;
@@ -142,7 +141,8 @@ module.exports = function () {
             return this.type();
         };
         /**
-         * Returns one of 'string', 'array', 'object', 'function', 'number', 'boolean', 'undefined', 'null'
+         * Returns one of 'string', 'array', 'object', 'function', 'number',
+         * 'boolean', 'undefined', 'null'
          */
         this.type = function () {
             return ({}).toString.call(this.value).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
@@ -164,6 +164,15 @@ module.exports = function () {
         };
     };
 
+    var isItLeaf = function (val) {
+        var isArray = val instanceof Array;
+        var isObject = typeof val === 'object' && !isArray;
+
+        // Leaf
+        var notLeaf = (isObject && val !== null) || isArray;
+        return !notLeaf;
+    };
+
     var traverse = function (obj, callback) {
         var seenObjects = [];
 
@@ -171,11 +180,9 @@ module.exports = function () {
             // if(key==='d') debugger;
             var isArray = val instanceof Array;
             var isObject = typeof val === 'object' && !isArray;
-            var isNull = val === null;
 
             // Leaf
-            var notLeaf = (isObject && !isNull) || isArray;
-            var isLeaf = !notLeaf;
+            var isLeaf = isItLeaf(val);
 
             // Circular
             var isCircular = false;
@@ -185,10 +192,6 @@ module.exports = function () {
                 seenObjects.push(val);
             }
 
-            // console.log('key: ' + key + ', isRoot: ' + isRoot + ', isLeaf: '
-            // +
-            // isLeaf + ', level: ' + level + ', isCircular: ' + isCircular + ',
-            // path: ' + path);
             callback(key, val, path, parent, level, isRoot, isLeaf, isCircular);
             if (!isCircular) {
                 var childKey, newPath;
@@ -218,7 +221,24 @@ module.exports = function () {
     var Jef = function (obj) {
         this._traverse = function (obj) {
             var nodeHash = {};
+
+            var rootNode = new JefNode();
+            rootNode._nodeHash = nodeHash;
+            rootNode.pathArray = [];
+            rootNode.path = '';
+            rootNode.value = obj;
+            rootNode.level = 0;
+            rootNode.isRoot = true;
+            rootNode.isLeaf = isItLeaf(obj);
+            rootNode.isCircular = false;
+            rootNode._internalPath = rootkey;
+            nodeHash[rootkey] = rootNode;
+            rootNode.parent = rootNode;
+
             traverse(obj, function (key, val, path, parent, level, isRoot, isLeaf, isCircular) {
+                if (isRoot) {
+                    return;
+                }
                 var node = new JefNode();
                 node._nodeHash = nodeHash;
                 node.pathArray = path;
@@ -231,18 +251,10 @@ module.exports = function () {
                 node.isCircular = isCircular;
 
                 // internal path
-                if (node.level === 0) {
-                    node._internalPath = rootkey;
-                } else {
-                    node._internalPath = rootkey + '.' + _getPathStr(node.pathArray);
-                }
+                node._internalPath = rootkey + '.' + _getPathStr(node.pathArray);
 
                 // hash
-                if (node.isRoot) {
-                    nodeHash[rootkey] = node;
-                } else {
-                    nodeHash[rootkey + '.' + node.path] = node;
-                }
+                nodeHash[rootkey + '.' + node.path] = node;
 
                 // parent
                 var parentPath = node.pathArray.slice(0, node.pathArray.length - 1);
@@ -256,11 +268,9 @@ module.exports = function () {
                 if (parentNode) {
                     node.parent = parentNode;
                 }
-                
+
                 // count
-                if(!node.isRoot){
-                    node.parent.count++;
-                }
+                node.parent.count++;
             });
             return nodeHash;
         };
