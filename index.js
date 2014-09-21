@@ -220,11 +220,15 @@ module.exports = function () {
         this._nodeHash = null;
         this._internalPath = null; // Just like this.path only it starts with
 
-        this.printHash = function () {
+        this.print = function (details) {
             var res = [];
             for ( var absolutePath in this._nodeHash) {
                 if (absolutePath.indexOf(this._internalPath) === 0) {
-                    res.push(absolutePath.replace(rootkey, 'root'));
+                    if(details){
+                        res.push(absolutePath.replace(rootkey, 'root')+' - '+JSON.stringify(this._nodeHash[absolutePath].value));
+                    } else{
+                        res.push(absolutePath.replace(rootkey, 'root'));
+                    }
                 }
             }
             return res;

@@ -72,6 +72,8 @@ function runTests () {
     console.log('\nTests3 - refresh');
     res = tests3.test1();
     console.log('tests3/test1: ' + passed(res));
+    res = tests3.test2();
+    console.log('tests3/test2: ' + passed(res));
 
     console.log();
     console.log('Tests: '+count+', failed: '+failed.toString().yellow+', succeeded: '+successful.toString().green);

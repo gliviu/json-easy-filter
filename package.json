@@ -15,7 +15,8 @@
   ],
   "devDependencies": {
       "istanbul": "0.3.2",
-      "colors": "0.6.2"
+      "colors": "0.6.2",
+      "diff": "1.0.8"
     },
   "scripts": {
       "test": "istanbul cover tests/runTests.js"
