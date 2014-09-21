@@ -89,11 +89,17 @@ var Tests3 = function () {
                 b1 : [
                         'c1', 'c2', {
                             d1 : 'd1',
-                            d2: ['e1', 'e2', 'e3']
-                        },{
-                            g1: ['h1', 'h2']
-                        },{
-                            m1: ['n1', 'n2']
+                            d2 : [
+                                    'e1', 'e2', 'e3'
+                            ]
+                        }, {
+                            g1 : [
+                                    'h1', 'h2'
+                            ]
+                        }, {
+                            m1 : [
+                                    'n1', 'n2'
+                            ]
                         }
                 ]
             }
@@ -102,11 +108,11 @@ var Tests3 = function () {
         var res1 = root.print(true);
 
         delete d.a1.b1.splice(1, 1); // remove first element
-        
+
         root.refresh()
         var res2 = root.print(true);
         if (true) {
-            console.diff(res1, res2);
+            console.log(diff(res1, res2));
         }
         var testResult1 = res1.toString() === [
                 'root',
@@ -146,17 +152,16 @@ var Tests3 = function () {
     };
 };
 
-function diff(v1, v2){
-    var d = jsdiff.diffChars(one, other);
-
-    d.forEach(function(part){
-      // green for additions, red for deletions
-      // grey for common parts
-      var color = part.added ? 'green' :
-        part.removed ? 'red' : 'grey';
-      process.stderr.write(part.value[color]);
+function diff (v1, v2) {
+    var d = jsdiff.diffLines(v1, v2);
+    var res = [];
+    d.forEach(function (part) {
+        // green for additions, red for deletions
+        // grey for common parts
+        var diffType = part.added ? '+' : part.removed ? '-' : '?';
+        res.push(diffType + ' ' + part.value);
     });
-    
+    return res;
 }
 
 module.exports = function () {
