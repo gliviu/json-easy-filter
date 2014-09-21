@@ -2,6 +2,7 @@
 var colors = require('colors');
 var tests1 = require('./tests1-examples')();
 var tests2 = require('./tests2')();
+var tests3 = require('./tests3-refresh')();
 var Jef = require('json-easy-filter');
 var sample1 = require('./sampleData1.js');
 
@@ -66,7 +67,12 @@ function runTests () {
     console.log('tests2/test8: ' + passed(res));
     res = tests2.test9();
     console.log('tests2/test9: ' + passed(res));
+
     
+    console.log('\nTests3 - refresh');
+    res = tests3.test1();
+    console.log('tests3/test1: ' + passed(res));
+
     console.log();
     console.log('Tests: '+count+', failed: '+failed.toString().yellow+', succeeded: '+successful.toString().green);
 }
