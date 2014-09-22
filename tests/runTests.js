@@ -74,6 +74,12 @@ function runTests () {
     console.log('tests3/test1: ' + passed(res));
     res = tests3.test2();
     console.log('tests3/test2: ' + passed(res));
+    res = tests3.test3();
+    console.log('tests3/test3: ' + passed(res));
+    res = tests3.test4();
+    console.log('tests3/test4: ' + passed(res));
+    res = tests3.test5();
+    console.log('tests3/test5: ' + passed(res));
 
     console.log();
     console.log('Tests: '+count+', failed: '+failed.toString().yellow+', succeeded: '+successful.toString().green);

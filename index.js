@@ -152,7 +152,7 @@ module.exports = function () {
         this.refresh = function () {
             var toDelete = {};
             for ( var absolutePath in this._nodeHash) {
-                if (absolutePath!==rootkey && absolutePath.indexOf(this._internalPath) === 0) {
+                if (absolutePath !== rootkey && absolutePath.indexOf(this._internalPath) === 0) {
                     toDelete[absolutePath] = true;
                 }
             }
@@ -162,17 +162,17 @@ module.exports = function () {
                 if (isRoot) {
                     return;
                 }
-                var internalPath = that._internalPath + '.' + _getPathStr(path)
+                var internalPath = that._internalPath + '.' + _getPathStr(path);
                 toDelete[internalPath] = false;
-                
+
                 // create or get existing node
                 var node;
                 if (!that._nodeHash[internalPath]) {
                     node = new JefNode();
                     node._nodeHash = that._nodeHash;
                     node._internalPath = internalPath;
-                    node.pathArray = path;
-                    node.path = _getPathStr(node.pathArray);
+                    node.pathArray = that.pathArray.concat(path);
+                    node.path = that.isRoot ? _getPathStr(node.pathArray) : that.path + '.' + _getPathStr(node.pathArray);
                     node.key = key;
                     that._nodeHash[internalPath] = node;
 
@@ -202,13 +202,11 @@ module.exports = function () {
                 node.isLeaf = isLeaf;
                 node.isCircular = isCircular;
 
-
             });
-            
+
             // remove nodes that no longer exist
-            for(var internalPath in toDelete){
-                if(toDelete[internalPath]===true){
-                    debugger;
+            for ( var internalPath in toDelete) {
+                if (toDelete[internalPath] === true) {
                     delete this._nodeHash[internalPath];
                 }
             }
@@ -224,9 +222,9 @@ module.exports = function () {
             var res = [];
             for ( var absolutePath in this._nodeHash) {
                 if (absolutePath.indexOf(this._internalPath) === 0) {
-                    if(details){
-                        res.push(absolutePath.replace(rootkey, 'root')+' - '+JSON.stringify(this._nodeHash[absolutePath].value));
-                    } else{
+                    if (details) {
+                        res.push(absolutePath.replace(rootkey, 'root') + ' - ' + JSON.stringify(this._nodeHash[absolutePath].value));
+                    } else {
                         res.push(absolutePath.replace(rootkey, 'root'));
                     }
                 }
