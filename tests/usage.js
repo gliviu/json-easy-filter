@@ -9,7 +9,7 @@ var obj = {
 		}
 };
 var numbers = new Jef(obj).filter(function(node) {
-		if (typeof node.value==='number') {
+		if (node.type()==='number') {
 			return node.key + ' ' + node.value;
 		}
 	});

@@ -24,7 +24,7 @@ var obj = {
 		}
 };
 var numbers = new Jef(obj).filter(function(node) {
-		if (typeof node.value==='number') {
+		if (node.type()==='number') {
 			return node.key + ' ' + node.value;
 		}
 	});
@@ -329,7 +329,7 @@ Wrapps a real Js node inside the tree that is traversed.
 * `node.pathArray` - string array containing the path to current node.
 * `node.path` - string representation of `node.pathArray`.
 * `node.level` - level of the current node. Root node has level 0.
-* `node.isLeaf` - indicates a leaf node. For {x: '{y: 'z'}, A: {}}' only y: 'z' is considered leaf node.
+* `node.isLeaf` - node is leaf. For `{x: '{y: 'z'}, A: {}}`, `A: {}` is not considered leaf node.
 * `node.isCircular` - indicates a circular reference 
 * `node.count` - number of first level child nodes. For array indicates nuber of elements. 
 * `node.has(propertyName)` - returns true if `node.value` has that property. If a regular expression is passed, all `node.value` property names are iterated and matched against pattern. 
@@ -339,6 +339,7 @@ Wrapps a real Js node inside the tree that is traversed.
 * `node.filter(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. The result of callback call is added to an array which is later returned by filter method. When filter method is called for a node other than root, `localContext` holds info relative to that node. If it is called for root `localContext` is equivalent to `childNode`. See `JefLocalContext` class below.   
 * `node.validate(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. If any of the calls to callback method returns false, validate method will also return false. `localContext` is treated the same as for filter method.
 * `node.remove(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. Callback method is expected to return the nodes to be deleted. Either a JefNode or an array of JefNode objects may be returned. After traversal is completed the nodes are removed from Js tree. The root object is never deleted.
+* `node.refresh()` - call this to update Jef object after any of node's content have been created/updated/deleted.
 `node.remove(callback)` returns: true in case of success; false if anything other than JefNode is returned by callback method.
 
 **JefLocalContext class**
@@ -348,9 +349,19 @@ Wrapps a real Js node inside the tree that is traversed.
 * `localContext.level` - level of the current node relative to current filter/validate operation.
 
 
+## Changelog
+v0.3.0
+* node.getType() is deprecated in favour of node.type()
+* addedd node.remove()
+* incompatible api change - node.isLeaf behavour no longer works as in 0.3.0
+* removed dependecy on <a href="https://www.npmjs.org/package/traverse" target="_blank">traverse</a>
+* added node.count and node.isEmpty()
+* added node.refresh() to support json content modification
+* bug fixes
+
 <a name="Links"></a>
 ## Links
 * XPath like query for json - <a href="https://www.npmjs.org/package/JSONPath" target="_blank">JsonPath</a>, <a href="https://www.npmjs.org/package/spahql" target="_blank">SpahQL</a>
-*  Filter, map, reduce - <a href="https://www.npmjs.org/package/traverse" target="_blank">traverse</a>
+* Filter, map, reduce - <a href="https://www.npmjs.org/package/traverse" target="_blank">traverse</a>
 * Json validator - <a href="https://www.npmjs.org/package/json-filter" target="_blank">json-filter</a>, <a href="https://www.npmjs.org/package/json-validator" target="_blank">json-validator</a>
 * Linq - <a href="http://jlinq.codeplex.com/wikipage?title=Command%20List" target="_blank">jLinq</a>, <a href="http://jslinq.codeplex.com/" target="_blank">jslinq</a>
