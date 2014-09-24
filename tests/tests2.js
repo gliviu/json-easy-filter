@@ -248,14 +248,34 @@ var Tests2 = function () {
             console.log(res4.isRoot);
             console.log(JSON.stringify(res4.value));
         }
-        var resA = res1.isRoot && JSON.stringify(res1.value)===JSON.stringify(JSON.parse('{"x":{"y":"z","t":{}},"a":["a","b"]}'));
-        var resB = !res2.isRoot && JSON.stringify(res2.value)===JSON.stringify(JSON.parse('{"y":"z","t":{}}'));
-        var resC = !res3.isRoot && JSON.stringify(res3.value)===JSON.stringify(JSON.parse('"b"'));
-        var resD = !res4.isRoot && JSON.stringify(res4.value)===JSON.stringify(JSON.parse('"b"'));
+        var resA = res1.isRoot && JSON.stringify(res1.value) === JSON.stringify(JSON.parse('{"x":{"y":"z","t":{}},"a":["a","b"]}'));
+        var resB = !res2.isRoot && JSON.stringify(res2.value) === JSON.stringify(JSON.parse('{"y":"z","t":{}}'));
+        var resC = !res3.isRoot && JSON.stringify(res3.value) === JSON.stringify(JSON.parse('"b"'));
+        var resD = !res4.isRoot && JSON.stringify(res4.value) === JSON.stringify(JSON.parse('"b"'));
         var testResult = resA && resB && resC && resD;
         return testResult;
     };
 
+    // fix bug: fix bug: path name clash. root.a1 is considered the same as root.a12
+    this.test10 = function () {
+        var jef = new Jef({
+            a1 : {
+                b1 : 'b1'
+            },
+            a12 : null,
+            a13 : null,
+        });
+        var res = jef.get('a1').filter(function (node) {
+            return node.path;
+        });
+        if (false) {
+            console.log(res);
+        }
+        var testResult = res.toString() === [
+                'a1', 'a1.b1'
+        ].toString();
+        return testResult;
+    };
 };
 
 module.exports = function () {
