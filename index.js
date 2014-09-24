@@ -51,18 +51,34 @@ module.exports = function () {
             }
             return this._nodeHash[rootkey + '.' + absolutePath];
         };
-        this.filter = function (callback) {
-            var result = [];
-            for ( var absolutePath in this._nodeHash) {
-                if (absolutePath.indexOf(this._internalPath) === 0) {
-                    var node = this._nodeHash[absolutePath];
 
-                    var resCallBack = callback(node, new JefLocalContext(node, this));
-                    if (resCallBack !== undefined) {
-                        result.push(resCallBack);
-                    }
+        /**
+         * Internal method for iterating 'this' and its children.
+         */
+        this._iterate = function (iterCallback) {
+            var internalPath = this._internalPath + '.';
+            // iterate local root
+            iterCallback(this);
+
+            // iterate children
+            for ( var absolutePath in this._nodeHash) {
+                if (absolutePath.indexOf(internalPath) === 0) {
+                    var node = this._nodeHash[absolutePath];
+                    iterCallback(node);
                 }
             }
+        };
+
+        this.filter = function (callback) {
+            var result = [];
+
+            var that = this;
+            this._iterate(function (node) {
+                var resCallBack = callback(node, new JefLocalContext(node, that));
+                if (resCallBack !== undefined) {
+                    result.push(resCallBack);
+                }
+            });
             return result;
         };
 
@@ -150,14 +166,15 @@ module.exports = function () {
         };
 
         this.refresh = function () {
-            var toDelete = {};
-            for ( var absolutePath in this._nodeHash) {
-                if (absolutePath !== rootkey && absolutePath.indexOf(this._internalPath) === 0) {
-                    toDelete[absolutePath] = true;
-                }
-            }
-
             var that = this;
+
+            var toDelete = {};
+            this._iterate(function(node){
+                if(!node.isRoot){
+                  toDelete[node._internalPath] = true;
+                }
+            });
+
             traverse(this.value, function (key, val, path, parent, level, isRoot, isLeaf, isCircular) {
                 if (isRoot) {
                     return;
@@ -205,7 +222,7 @@ module.exports = function () {
             });
 
             // remove nodes that no longer exist
-            for ( var internalPath in toDelete) {
+            for (var internalPath in toDelete) {
                 if (toDelete[internalPath] === true) {
                     delete this._nodeHash[internalPath];
                 }
@@ -218,17 +235,17 @@ module.exports = function () {
         this._nodeHash = null;
         this._internalPath = null; // Just like this.path only it starts with
 
-        this.print = function (details) {
+        this.print = function (showContent) {
             var res = [];
-            for ( var absolutePath in this._nodeHash) {
-                if (absolutePath.indexOf(this._internalPath) === 0) {
-                    if (details) {
-                        res.push(absolutePath.replace(rootkey, 'root') + ' - ' + JSON.stringify(this._nodeHash[absolutePath].value));
-                    } else {
-                        res.push(absolutePath.replace(rootkey, 'root'));
-                    }
+            var that = this;
+            
+            this._iterate(function(node){
+                if (showContent) {
+                    res.push(node._internalPath.replace(rootkey, 'root') + ' - ' + JSON.stringify(that._nodeHash[node._internalPath].value));
+                } else {
+                    res.push(node._internalPath.replace(rootkey, 'root'));
                 }
-            }
+            });
             return res;
         };
     };
