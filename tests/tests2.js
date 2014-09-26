@@ -276,6 +276,59 @@ var Tests2 = function () {
         ].toString();
         return testResult;
     };
+    // hasType()
+    this.test11 = function () {
+        var jef = new Jef({
+            a1: {},
+            a2 : null,
+            a3 : 3,
+            a4: [],
+            a5: 'a5'
+        });
+        var res = {};
+        res.res01 = jef.get('a1').hasType();
+        res.res02 = jef.get('a1').hasType('number');
+        res.res03 = jef.get('a1').hasType('object');
+        res.res04 = jef.get('a1').hasType('number', 'object');
+        res.res05 = jef.get('a1').hasType('dummy');
+        res.res06 = jef.get('a1').hasType('dummy', 'object');
+        res.res07 = jef.get('a2').hasType('object', 'array');
+        res.res08 = jef.get('a2').hasType('number', 'null');
+        res.res09 = jef.get('a2').hasType('object', 'number', 'null');
+        res.res10 = jef.get('a3').hasType('string', 'object');
+        res.res11 = jef.get('a3').hasType('number');
+        res.res12 = jef.get('a3').hasType('null', 'number', 'string');
+        res.res13 = jef.get('a4').hasType('array', 'null');
+        res.res14 = jef.get('a4').hasType('null', 'number', 'string');
+        res.res15 = jef.get('a5').hasType('null', 'number', 'string');
+        res.res16 = jef.get('a5').hasType('null', 'string', 'string');
+        res.res17 = jef.get('a5').hasType('null', 'array');
+        res.res18 = jef.get('a5').hasType('string', 'number');
+        if (false) {
+            console.log(JSON.stringify(res, null, 4));
+        }
+        var testResult = JSON.stringify(res)===JSON.stringify({
+            "res01": false,
+            "res02": false,
+            "res03": true,
+            "res04": true,
+            "res05": false,
+            "res06": true,
+            "res07": false,
+            "res08": true,
+            "res09": true,
+            "res10": false,
+            "res11": true,
+            "res12": true,
+            "res13": true,
+            "res14": false,
+            "res15": true,
+            "res16": true,
+            "res17": false,
+            "res18": true
+        });
+        return testResult;
+    };
 };
 
 module.exports = function () {

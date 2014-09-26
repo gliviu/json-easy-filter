@@ -164,6 +164,21 @@ module.exports = function () {
         this.type = function () {
             return ({}).toString.call(this.value).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
         };
+        /**
+         * Returns true if current value has any of the types given as arguments.
+         */
+        this.hasType = function() {
+            if(arguments.length===1){
+                return this.type()===arguments[0];
+            } else{
+                for(var i= 0; i<arguments.length; i++){
+                    if(this.type()===arguments[i]){
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
 
         this.refresh = function () {
             var that = this;
