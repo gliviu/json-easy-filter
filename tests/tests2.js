@@ -256,7 +256,7 @@ var Tests2 = function () {
         return testResult;
     };
 
-    // fix bug: fix bug: path name clash. root.a1 is considered the same as root.a12
+    // fix bug: path name clash. root.a1 is considered the same as root.a12
     this.test10 = function () {
         var jef = new Jef({
             a1 : {
@@ -328,6 +328,39 @@ var Tests2 = function () {
             "res18": true
         });
         return testResult;
+    };
+    // fix bug: wront refresh()
+    this.test12 = function () {
+        var root = new Jef({
+            "a1" : {
+                "a2" : 1
+            },
+            "a2" : "conflict",
+            "a3" : "conflict",
+            "a5" : {
+                "a6" : "a",
+                "a8" : 2
+            }
+        });
+        var node = root.get('a5');
+        node.value.a6 = 'conflict';
+        node.refresh();
+        var res1 = root.print();
+        var res2 = node.print();
+        if (true) {
+            console.log(res1);
+            console.log(res2);
+        }
+        var testResult1 = res1.toString() === [ 'root',
+                                                'root.a1',
+                                                'root.a1.a2',
+                                                'root.a2',
+                                                'root.a3',
+                                                'root.a5',
+                                                'root.a5.a6',
+                                                'root.a5.a8' ].toString();
+        var testResult2 = res2.toString() === [ 'root.a5', 'root.a5.a6', 'root.a5.a8' ].toString();
+        return testResult1 && testResult2;
     };
 };
 

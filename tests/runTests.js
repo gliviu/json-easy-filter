@@ -71,6 +71,8 @@ function runTests () {
     console.log('tests2/test10: ' + passed(res));
     res = tests2.test11();
     console.log('tests2/test11: ' + passed(res));
+    res = tests2.test12();
+    console.log('tests2/test12: ' + passed(res));
 
     
     console.log('\nTests3 - refresh');
