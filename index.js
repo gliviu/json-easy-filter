@@ -185,7 +185,7 @@ module.exports = function () {
 
             var toDelete = {};
             this._iterate(function(node){
-                if(!node.isRoot){
+                if(node._internalPath!==that._internalPath){
                   toDelete[node._internalPath] = true;
                 }
             });
