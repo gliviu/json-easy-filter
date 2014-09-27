@@ -1,12 +1,13 @@
 "use strict";
 
 var fs = require('fs');
-var Jef = require('../index');
+var JefNode = require('../index').JefNode;
+var traverse = require('../index').traverse;
 var sample1 = require('./sampleData1.js');
 
 var Tests2 = function () {
     this.test1 = function (printResult) {
-        var res = new Jef(sample1).get('departments.admin').filter(function (node) {
+        var res = new JefNode(sample1).get('departments.admin').filter(function (node) {
             if (node.value.manager === 'john') {
                 return node.value.manager;
             }
@@ -20,7 +21,7 @@ var Tests2 = function () {
         return testResult;
     };
     this.test2 = function (printResult) {
-        var res = new Jef(sample1).get('employees').parent.isRoot;
+        var res = new JefNode(sample1).get('employees').parent.isRoot;
         if (printResult) {
             console.log(res);
         }
@@ -28,7 +29,7 @@ var Tests2 = function () {
         return testResult;
     };
     this.test3 = function () {
-        var res = new Jef(sample1).filter(function (node) {
+        var res = new JefNode(sample1).filter(function (node) {
             if (node.isRoot) {
                 return 'Root node - level=' + node.level + ', path: ' + node.path + ', pathLength=' + node.pathArray.length;
             }
@@ -51,7 +52,7 @@ var Tests2 = function () {
         return testResult;
     };
     this.test4 = function (printResult) {
-        var res = new Jef(sample1).filter(function (node) {
+        var res = new JefNode(sample1).filter(function (node) {
             if (node.isLeaf && node.level > 3) {
                 return node.path;
             }
@@ -79,7 +80,7 @@ var Tests2 = function () {
 
     // isLeaf
     this.test5 = function () {
-        var res = new Jef({
+        var res = new JefNode({
             x : {
                 y : 'z'
             },
@@ -114,7 +115,7 @@ var Tests2 = function () {
         var data = require('./tests2-test6-input');
         var start = new Date('2015-01-03');
         var end = new Date('2015-01-07');
-        var success = new Jef(data).remove(function (node) {
+        var success = new JefNode(data).remove(function (node) {
             if (node.has('requests')) {
                 var requests = node.value.requests;
                 for (var i = 0; i < requests.length; i++) {
@@ -160,7 +161,7 @@ var Tests2 = function () {
         data.x.y = data.z;
         data.t = data.z;
         data.x.arr[1] = data.t;
-        var res = new Jef(data).filter(function (node) {
+        var res = new JefNode(data).filter(function (node) {
             if (node.isRoot) {
                 return 'root';
             } else if (node.isCircular) {
@@ -190,7 +191,7 @@ var Tests2 = function () {
     };
     // isEmpty() and count
     this.test8 = function () {
-        var res = new Jef({
+        var res = new JefNode({
             x : {
                 y : 'z',
                 t : {}
@@ -204,7 +205,7 @@ var Tests2 = function () {
         }).filter(function (node) {
             return node.path + ' ' + node.count + ' ' + node.isEmpty();
         });
-        var res2 = new Jef({}).filter(function (node) {
+        var res2 = new JefNode({}).filter(function (node) {
             return node.path + ' ' + node.count + ' ' + node.isEmpty();
         });
         if (false) {
@@ -221,7 +222,7 @@ var Tests2 = function () {
 
     // get('')
     this.test9 = function () {
-        var jef = new Jef({
+        var jef = new JefNode({
             x : {
                 y : 'z',
                 t : {}
@@ -258,7 +259,7 @@ var Tests2 = function () {
 
     // fix bug: path name clash. root.a1 is considered the same as root.a12
     this.test10 = function () {
-        var jef = new Jef({
+        var jef = new JefNode({
             a1 : {
                 b1 : 'b1'
             },
@@ -278,12 +279,12 @@ var Tests2 = function () {
     };
     // hasType()
     this.test11 = function () {
-        var jef = new Jef({
-            a1: {},
+        var jef = new JefNode({
+            a1 : {},
             a2 : null,
             a3 : 3,
-            a4: [],
-            a5: 'a5'
+            a4 : [],
+            a5 : 'a5'
         });
         var res = {};
         res.res01 = jef.get('a1').hasType();
@@ -307,26 +308,43 @@ var Tests2 = function () {
         if (false) {
             console.log(JSON.stringify(res, null, 4));
         }
-        var testResult = JSON.stringify(res)===JSON.stringify({
-            "res01": false,
-            "res02": false,
-            "res03": true,
-            "res04": true,
-            "res05": false,
-            "res06": true,
-            "res07": false,
-            "res08": true,
-            "res09": true,
-            "res10": false,
-            "res11": true,
-            "res12": true,
-            "res13": true,
-            "res14": false,
-            "res15": true,
-            "res16": true,
-            "res17": false,
-            "res18": true
+        var testResult = JSON.stringify(res) === JSON.stringify({
+            "res01" : false,
+            "res02" : false,
+            "res03" : true,
+            "res04" : true,
+            "res05" : false,
+            "res06" : true,
+            "res07" : false,
+            "res08" : true,
+            "res09" : true,
+            "res10" : false,
+            "res11" : true,
+            "res12" : true,
+            "res13" : true,
+            "res14" : false,
+            "res15" : true,
+            "res16" : true,
+            "res17" : false,
+            "res18" : true
         });
+        return testResult;
+    };
+    // traverse
+    this.test12 = function () {
+        var res = [];
+        traverse({
+            a : 'b',
+            c : 'd'
+        }, function (key, val) {
+            res.push(key);
+        });
+        if (false) {
+            console.log(JSON.stringify(res, null, 4));
+        }
+        var testResult = JSON.stringify(res) === JSON.stringify([
+                null, "a", "c"
+        ]);
         return testResult;
     };
 };

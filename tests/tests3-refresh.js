@@ -1,7 +1,7 @@
 "use strict";
 
 var fs = require('fs');
-var Jef = require('../index');
+var JefNode = require('../index').JefNode;
 
 var Tests3 = function () {
     // objects
@@ -26,7 +26,7 @@ var Tests3 = function () {
                 }
             }
         };
-        var root = new Jef(d);
+        var root = new JefNode(d);
 
         d.a5 = 'a5';
         delete d.a1.b1;
@@ -85,7 +85,7 @@ var Tests3 = function () {
                 ]
             }
         };
-        var root = new Jef(d);
+        var root = new JefNode(d);
 
         d.a1.b1.splice(1, 1); // remove a1.b1.c2
         delete d.a1.b1[1].d1;
@@ -130,7 +130,7 @@ var Tests3 = function () {
                 b1 : 'b1'
             }
         };
-        var root = new Jef(d);
+        var root = new JefNode(d);
 
         delete d.a1;
 
@@ -173,7 +173,7 @@ var Tests3 = function () {
                 y1 : 'y1'
             }
         };
-        var root = new Jef(d);
+        var root = new JefNode(d);
 
         d.x1.a5 = 'a5';
         delete d.x1.a1.b1;
@@ -238,7 +238,7 @@ var Tests3 = function () {
                 }
             }
         };
-        var root = new Jef(d);
+        var root = new JefNode(d);
 
         d.x1.a1.b1.splice(1, 1); // remove a1.x1.b1.c2
         delete d.x1.a1.b1[1].d1;
@@ -279,7 +279,7 @@ var Tests3 = function () {
     };
     // fix bug: wrong refresh()
     this.test6 = function () {
-        var root = new Jef({
+        var root = new JefNode({
             "a1" : {
                 "a2" : 1
             },

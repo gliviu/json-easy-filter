@@ -1,9 +1,6 @@
 json-easy-filter
 ================
-
-Javascript node module for programatic filtering and validation of Json objects.
-
-For other similar projects see [Links](#Links) section.
+Javascript node module for programmatic filtering and validation of Json objects.
 
 ## Installation
 ```shell
@@ -13,41 +10,52 @@ $ npm install json-easy-filter
 ## Usage
 [plunkr](http://plnkr.co/edit/yZ85mr)
 ```js
-var Jef = require('json-easy-filter');
+var JefNode = require('json-easy-filter').JefNode;
 
 var obj = {
 		v1: 100,
-		v2: 200,
+		v2: 'v2',
 		v3: {
-				v4: 300,
+				v4: 'v4',
 				v5: 400
 		}
 };
-var numbers = new Jef(obj).filter(function(node) {
+var numbers = new JefNode(obj).filter(function(node) {
 		if (node.type()==='number') {
 			return node.key + ' ' + node.value;
 		}
 	});
 
 console.log(numbers);
->> [ 'v1 100', 'v2 200', 'v4 300', 'v5 400' ]
+>> [ 'v1 100', 'v5 400' ]
 ```
-`filter()` will recursively traverse each node in `obj` and trigger the callback method.
-`node` parameter received by callback is a wrapper around the real Js object which can be accessed using `node.key` and `node.value`.
+#### How it works
+Any newly instantiated JefNode object is actually a structure wrapping the real Json object  so that for each Json node there will be a corresponding JefNode. 
+The purpose of this structure is to allow easy tree navigation. Each JefNode maintains properties such as 'parent' which returns the ancestor or get(path) which returns a child based on its relative path.
+In fact 'new JefNode(obj)' returns the root JefNode which is further used to [filter()](exFilter), [validate()](exValidate) or [remove()](exRemove).
 
-Similar to filter method, [validate()](#exValidate) helps validating the tree and [remove()](#exRemove) provides functionality for removing individual nodes. 
+####A Word on performance
+It is obvious already that json-easy-filter is designed more towards convenience rather than being performance wise. Particularly using it on server side or feeding large files may pose a problem for high request rate apps. 
+If this is the case, Jef exposes its own internal [traversal](exTraverse) mechsnism or you may try one of the similar projects presented in [links](#Links) section.
+
+#### Filter, validate, remove
+Tree traversal is provided by `JefNode.filter(callback)` . It will recursively iterate each node and trigger the callback method which receives the currently traveled JefNode. Use `node.value` and `node.key` to get access to the real json object. Use `parent`, `path` and `get()` to navigate the tree. Use `isRoot`, `isLeaf`, `isCircular` for information about current node. `level` provides the traversal depth. 
+
+Do not change Json object during filter() call. Keep a list of changes and apply it after filter has finished. For convenience, [remove()](exRemove) will iterate the tree and delete nodes passed back by the callback.
+
+Aside from filter and remove, there is also a [validate()](exValidate) method. Returning false from callback will cause the whole validation to fail.
 
 Check out the examples and [API](#API) for more info.
-
 
 ## Examples
 Use the <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/master/tests/sampleData1.js" target="_blank">sample</a> data to follow this section.
 
+<a name="exFilter"></a>
 ### Filter
 &#35;1. node.has() [plunkr](http://plnkr.co/edit/nPwRhF)
 
 ```js
-var res = new Jef(sample1).filter(function(node) {
+var res = new JefNode(sample1).filter(function(node) {
 	if (node.has('username')) {
 		return node.value.username;
 	}
@@ -58,7 +66,7 @@ console.log(res);
 ```
 &#35;2. node.value [plunkr](http://plnkr.co/edit/x9Nq4z)
 ```js
-var res = new Jef(sample1).filter(function(node) {
+var res = new JefNode(sample1).filter(function(node) {
 	if (node.has('salary') && node.value.salary > 200) {
 		return node.value.username + ' ' + node.value.salary;
 	}
@@ -69,7 +77,7 @@ console.log(res);
 
 &#35;3. Paths, node.has(RegExp), level [plunkr](http://plnkr.co/edit/1t4DJ9)
 ```js
-var res = new Jef(sample1).filter(function(node){
+var res = new JefNode(sample1).filter(function(node){
 	if(node.has(/^(phone|email|city)$/)){
 		return 'contact: '+node.path;
 	}
@@ -90,7 +98,7 @@ When `has(propertyName)` receives a string it calls `node.value[propertyName]`. 
 
 &#35;4. node.key, node.parent and node.get() [plunkr](http://plnkr.co/edit/zEusEK)
 ```js
-var res = new Jef(sample1).filter(function(node){
+var res = new JefNode(sample1).filter(function(node){
 	if(node.key==='email' && node.value==='a@b.c'){
 		var res = [];
 		res.push('Email: key - '+node.key+', value: '+node.value+', path: '+node.path);
@@ -123,7 +131,7 @@ console.log(res);
 
 &#35;5. Array handling [plunkr](http://plnkr.co/edit/lseyjv)
 ```js
-var res = new Jef(sample1).filter(function(node){
+var res = new JefNode(sample1).filter(function(node){
 	if(node.parent && node.parent.key==='employees'){
 		if(node.type()==='object'){
 			return 'key: '+node.key+', username: '+node.value.username+', path: '+node.path;
@@ -161,7 +169,7 @@ var data = {
 data.z = data.x;
 data.x.y = data.z;
 data.t = data.z;
-var res = new Jef(data).filter(function(node) {
+var res = new JefNode(data).filter(function(node) {
 	if(node.isRoot){
 		return 'root';
 	} else if (node.isCircular) {
@@ -183,7 +191,7 @@ console.log(res);
 ### Validate
 &#35;1. node.validate() [plunkr](http://plnkr.co/edit/L7q3VH)
 ```js
-var res = new Jef(sample1).validate(function(node) {
+var res = new JefNode(sample1).validate(function(node) {
 	if (node.parent && node.parent.key==='departments' && !node.has('manager')) {
 		// current department is missing the mandatory 'manager' property
 		return false;
@@ -195,7 +203,7 @@ console.log(res);
 &#35;2. Validation info [plunkr](http://plnkr.co/edit/EVqTtV)
 ```js
 var info = [];
-var res = new Jef(sample1).validate(function(node) {
+var res = new JefNode(sample1).validate(function(node) {
 var valid = true;
 if (node.parent && node.parent.key==='departments' ) {
 	// Inside department
@@ -242,7 +250,7 @@ false
 &#35;3. Sub validator [plunkr](http://plnkr.co/edit/Z43d0e)
 ```js
 var info = [];
-var res = new Jef(sample1).get('departments').validate(function (node, local) {
+var res = new JefNode(sample1).get('departments').validate(function (node, local) {
     var valid = true;
     if (local.level === 1) {
         // Inside department
@@ -265,10 +273,12 @@ false
 
 <a name="exRemove"></a>
 ### Remove
-&#35;1. node.remove() [plunkr](http://plnkr.co/edit/UzVghb)
+Instead of using filter() for deleting certain nodes, remove() makes it easy by just requiring to return the nodes to be deleted from the callback.
+
+[plunkr](http://plnkr.co/edit/UzVghb)
 ```js
 var sample = JSON.parse(JSON.stringify(sample1));
-var success = new Jef(sample).remove(function(node) {
+var success = new JefNode(sample).remove(function(node) {
     if(node.parent && node.parent.key==='departments'){
         var isITDepartment = node.has('name') && node.value.name==='IT'; 
         if(isITDepartment){
@@ -314,6 +324,31 @@ console.log(success);
 }
 true
 ```
+<a name="exTraverse"></a>
+### Traverse
+Internal Json traversal mechanism is exposed for cases where performance is an issue.
+[plunkr](http://plnkr.co/edit/UzVghb) todo
+```js
+var traverse = require('json-easy-filter').traverse;
+var res = [];
+traverse(sample1, function (key, val, path, parentKey, parentVal, level, isRoot, isLeaf, isCircular) {
+    debugger;
+    if (parentKey && parentKey === 'departments') {
+        // inside department
+        res.push('key: ' + key + ', val: ' + val.name + ', path: ' + path);
+    }
+})
+console.log(res);
+
+>> [  'key: admin, val: Administrative, path: departments,admin',
+	  'key: it, val: IT, path: departments,it',
+	  'key: finance, val: Financiar, path: departments,finance',
+	  'key: marketing, val: Commercial, path: departments,marketing',
+	  'key: hr, val: Human resources, path: departments,hr',
+	  'key: supply, val: undefined, path: departments,supply' ]
+ 
+```
+
 
 <a name="API"></a>
 ## API
@@ -351,9 +386,10 @@ Wrapps a real Js node inside the tree that is traversed.
 
 ## Changelog
 v0.3.0
+* exposed internal traverse() mechanism. Instead of require('json-easy-filter') use either require('json-easy-filter').JefNode or require('json-easy-filter').traverse.
 * node.getType() is deprecated in favour of node.type()
 * addedd node.remove()
-* incompatible api change - node.isLeaf behavour no longer works as in 0.3.0
+* node.isLeaf behavour no longer works as in 0.3.0. See API.
 * removed dependecy on <a href="https://www.npmjs.org/package/traverse" target="_blank">traverse</a>
 * added node.count and node.isEmpty()
 * added node.refresh() to support json content modification

@@ -1,7 +1,7 @@
 "use strict";
 
 var fs = require('fs');
-var Jef = require('../index');
+var JefNode = require('../index').JefNode;
 var sample1 = require('./sampleData1.js');
 
 var Tests1 = function () {
@@ -9,7 +9,7 @@ var Tests1 = function () {
      * node.has()
      */
     this.test1_filter = function (printResult) {
-        var res = new Jef(sample1).filter(function (node) {
+        var res = new JefNode(sample1).filter(function (node) {
             if (node.has('username')) {
                 return node.value.username;
             }
@@ -27,7 +27,7 @@ var Tests1 = function () {
      * node.value
      */
     this.test2_filter = function (printResult) {
-        var res = new Jef(sample1).filter(function (node) {
+        var res = new JefNode(sample1).filter(function (node) {
             if (node.has('salary') && node.value.salary > 200) {
                 return node.value.username + ' ' + node.value.salary;
             }
@@ -43,7 +43,7 @@ var Tests1 = function () {
 
     // Paths, node.has(RegExp), level
     this.test3_filter = function (printResult) {
-        var res = new Jef(sample1).filter(function (node) {
+        var res = new JefNode(sample1).filter(function (node) {
             if (node.has(/^(phone|email|city)$/)) {
                 return 'contact: ' + node.path;
             }
@@ -67,7 +67,7 @@ var Tests1 = function () {
 
     // node.key, node.parent and node.get()
     this.test4_filter = function (printResult) {
-        var res = new Jef(sample1).filter(function (node) {
+        var res = new JefNode(sample1).filter(function (node) {
             if (node.key === 'email' && node.value === 'a@b.c') {
                 var res = [];
                 res.push('Email: key - ' + node.key + ', value: ' + node.value + ', path: ' + node.path);
@@ -109,7 +109,7 @@ var Tests1 = function () {
      * Array handling
      */
     this.test5_filter = function (printResult) {
-        var res = new Jef(sample1).filter(function (node) {
+        var res = new JefNode(sample1).filter(function (node) {
             if (node.parent && node.parent.key === 'employees') {
                 if (node.type() === 'object') {
                     return 'key: ' + node.key + ', username: ' + node.value.username + ', path: ' + node.path;
@@ -154,7 +154,7 @@ var Tests1 = function () {
         data.z = data.x;
         data.x.y = data.z;
         data.t = data.z;
-        var res = new Jef(data).filter(function (node) {
+        var res = new JefNode(data).filter(function (node) {
             if (node.isRoot) {
                 return 'root';
             } else if (node.isCircular) {
@@ -176,7 +176,7 @@ var Tests1 = function () {
      * Subfilters
      */
     this.test7_filter = function (printResult) {
-        var res = new Jef(sample1).get('employees.0.contact').filter(
+        var res = new JefNode(sample1).get('employees.0.contact').filter(
                 function (node, local) {
                     if (node.key === 'phone') {
                         return [
@@ -211,7 +211,7 @@ var Tests1 = function () {
      * node.validate()
      */
     this.test1_validate = function (printResult) {
-        var res = new Jef(sample1).validate(function (node) {
+        var res = new JefNode(sample1).validate(function (node) {
             if (node.parent && node.parent.key === 'departments' && !node.has('manager')) {
                 // current department is missing the mandatory 'manager'
                 // property
@@ -230,7 +230,7 @@ var Tests1 = function () {
      */
     this.test2_validate = function (printResult) {
         var info = [];
-        var res = new Jef(sample1).validate(function (node) {
+        var res = new JefNode(sample1).validate(function (node) {
             var valid = true;
             if (node.parent && node.parent.key === 'departments') {
                 // Inside department
@@ -284,7 +284,7 @@ var Tests1 = function () {
      */
     this.test3_validate = function () {
         var info = [];
-        var res = new Jef(sample1).get('departments').validate(function (node, local) {
+        var res = new JefNode(sample1).get('departments').validate(function (node, local) {
             var valid = true;
             if (local.level === 1) {
                 // Inside department
@@ -311,9 +311,9 @@ var Tests1 = function () {
     /**
      * node.remove()
      */
-    this.test1_delete = function () {
+    this.test1_remove = function () {
         var sample = JSON.parse(JSON.stringify(sample1));
-        var success = new Jef(sample).remove(function (node) {
+        var success = new JefNode(sample).remove(function (node) {
             if (node.parent && node.parent.key === 'departments') {
                 var isITDepartment = node.has('name') && node.value.name === 'IT';
                 if (isITDepartment) {
@@ -337,8 +337,36 @@ var Tests1 = function () {
             console.log(JSON.stringify(sample, null, 4));
             console.log(success);
         }
-        var expected = JSON.parse(fs.readFileSync(__dirname+'/tests1-test1-delete-expected.json', 'utf8'));
+        var expected = JSON.parse(fs.readFileSync(__dirname + '/tests1-test1-delete-expected.json', 'utf8'));
         var testResult = JSON.stringify(sample, null, 4) === JSON.stringify(expected, null, 4) && success;
+        return testResult;
+    };
+
+    /**
+     * traverse()
+     */
+    this.test1_traverse = function () {
+        var traverse = require('json-easy-filter').traverse;
+        var res = [];
+        traverse(sample1, function (key, val, path, parentKey, parentVal, level, isRoot, isLeaf, isCircular) {
+            debugger;
+            if (parentKey && parentKey === 'departments') {
+                // inside department
+                res.push('key: ' + key + ', val: ' + val.name + ', path: ' + path);
+            }
+        })
+
+        if (false) {
+            console.log(res);
+        }
+        var testResult = res.toString() === [
+                'key: admin, val: Administrative, path: departments,admin',
+                'key: it, val: IT, path: departments,it',
+                'key: finance, val: Financiar, path: departments,finance',
+                'key: marketing, val: Commercial, path: departments,marketing',
+                'key: hr, val: Human resources, path: departments,hr',
+                'key: supply, val: undefined, path: departments,supply'
+        ].toString();
         return testResult;
     };
 

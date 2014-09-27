@@ -1,4 +1,4 @@
-var Jef = require('json-easy-filter');
+var JefNode = require('json-easy-filter').JefNode;
 
 var obj = {
 		v1: 100,
@@ -8,7 +8,7 @@ var obj = {
 				v5: 400
 		}
 };
-var numbers = new Jef(obj).filter(function(node) {
+var numbers = new JefNode(obj).filter(function(node) {
 		if (node.type()==='number') {
 			return node.key + ' ' + node.value;
 		}

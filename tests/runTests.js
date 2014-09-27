@@ -45,8 +45,13 @@ function runTests () {
     res = tests1.test3_validate();
     console.log('tests1/test3_validate: ' + passed(res));
 
-    res = tests1.test1_delete();
-    console.log('tests1/test1_delete: ' + passed(res));
+    console.log('\nTests1 - remove');
+    res = tests1.test1_remove();
+    console.log('tests1/test1_remove: ' + passed(res));
+
+    console.log('\nTests1 - traverse');
+    res = tests1.test1_traverse();
+    console.log('tests1/test1_traverse: ' + passed(res));
 
     console.log('\nTests2');
     res = tests2.test1();
@@ -71,6 +76,8 @@ function runTests () {
     console.log('tests2/test10: ' + passed(res));
     res = tests2.test11();
     console.log('tests2/test11: ' + passed(res));
+    res = tests2.test12();
+    console.log('tests2/test12: ' + passed(res));
 
     
     console.log('\nTests3 - refresh');

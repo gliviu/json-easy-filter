@@ -1,6 +1,5 @@
-Jef = function () {
+var JefNode = function () {
     "use strict";
-
 
     var _getPathStr = function (path, delimiter) {
         if (!delimiter) {
@@ -26,7 +25,7 @@ Jef = function () {
         this.path = _getPathStr(this.pathArray);
     };
 
-    var JefNode = function () {
+    var JefNode = function (obj) {
         this.key = null;
         this.value = null;
         this.parent = null;
@@ -37,10 +36,13 @@ Jef = function () {
         this.isCircular = null;
         this.level = null;
         this.count = 0;
-        this.isEmpty = function(){
-            return this.count===0;
+        this.isEmpty = function () {
+            return this.count === 0;
         };
         this.get = function (relPathStr) {
+            if (!relPathStr) {
+                return this;
+            }
             var absolutePath;
             if (this.isRoot) {
                 absolutePath = relPathStr;
@@ -49,18 +51,34 @@ Jef = function () {
             }
             return this._nodeHash[rootkey + '.' + absolutePath];
         };
-        this.filter = function (callback) {
-            var result = [];
-            for ( var absolutePath in this._nodeHash) {
-                if (absolutePath.indexOf(this._internalPath) === 0) {
-                    var node = this._nodeHash[absolutePath];
 
-                    var resCallBack = callback(node, new JefLocalContext(node, this));
-                    if (resCallBack !== undefined) {
-                        result.push(resCallBack);
-                    }
+        /**
+         * Internal method for iterating 'this' and its children.
+         */
+        this._iterate = function (iterCallback) {
+            var internalPath = this._internalPath + '.';
+            // iterate local root
+            iterCallback(this);
+
+            // iterate children
+            for ( var absolutePath in this._nodeHash) {
+                if (absolutePath.indexOf(internalPath) === 0) {
+                    var node = this._nodeHash[absolutePath];
+                    iterCallback(node);
                 }
             }
+        };
+
+        this.filter = function (callback) {
+            var result = [];
+
+            var that = this;
+            this._iterate(function (node) {
+                var resCallBack = callback(node, new JefLocalContext(node, that));
+                if (resCallBack !== undefined) {
+                    result.push(resCallBack);
+                }
+            });
             return result;
         };
 
@@ -138,11 +156,92 @@ Jef = function () {
         this.getType = function () {
             return this.type();
         };
+
         /**
-         * Returns one of 'string', 'array', 'object', 'function', 'number', 'boolean', 'undefined', 'null'
+         * Returns one of 'string', 'array', 'object', 'function', 'number',
+         * 'boolean', 'undefined', 'null'
          */
         this.type = function () {
             return ({}).toString.call(this.value).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+        };
+        /**
+         * Returns true if current value has any of the types given as arguments.
+         */
+        this.hasType = function() {
+            if(arguments.length===1){
+                return this.type()===arguments[0];
+            } else{
+                for(var i= 0; i<arguments.length; i++){
+                    if(this.type()===arguments[i]){
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+
+        this.refresh = function () {
+            var that = this;
+
+            var toDelete = {};
+            this._iterate(function(node){
+                if(node._internalPath!==that._internalPath){
+                  toDelete[node._internalPath] = true;
+                }
+            });
+
+            traverse(this.value, function (key, val, path, parent, level, isRoot, isLeaf, isCircular) {
+                if (isRoot) {
+                    return;
+                }
+                var internalPath = that._internalPath + '.' + _getPathStr(path);
+                toDelete[internalPath] = false;
+
+                // create or get existing node
+                var node;
+                if (!that._nodeHash[internalPath]) {
+                    node = new JefNode();
+                    node._nodeHash = that._nodeHash;
+                    node._internalPath = internalPath;
+                    node.pathArray = that.pathArray.concat(path);
+                    node.path = that.isRoot ? _getPathStr(node.pathArray) : that.path + '.' + _getPathStr(node.pathArray);
+                    node.key = key;
+                    that._nodeHash[internalPath] = node;
+
+                    // parent
+                    var parentPath = node.pathArray.slice(0, node.pathArray.length - 1);
+                    var parentNode;
+                    if (parentPath.length === 0) {
+                        // parent is root node
+                        parentNode = that._nodeHash[rootkey];
+                    } else {
+                        parentNode = that._nodeHash[rootkey + '.' + _getPathStr(parentPath)];
+                    }
+                    if (parentNode) {
+                        node.parent = parentNode;
+                    }
+
+                    // count
+                    node.parent.count++;
+                } else {
+                    node = that._nodeHash[internalPath];
+                }
+
+                // update node
+                node.value = val;
+                node.level = that.level + level;
+                node.isRoot = false;
+                node.isLeaf = isLeaf;
+                node.isCircular = isCircular;
+
+            });
+
+            // remove nodes that no longer exist
+            for (var internalPath in toDelete) {
+                if (toDelete[internalPath] === true) {
+                    delete this._nodeHash[internalPath];
+                }
+            }
         };
 
         // ////////////////////////
@@ -150,29 +249,58 @@ Jef = function () {
         // ////////////////////////
         this._nodeHash = null;
         this._internalPath = null; // Just like this.path only it starts with
-        // rootkey.
 
-        this._debugNodeHash = function () {
-            for ( var absolutePath in this._nodeHash) {
-                if (absolutePath.indexOf(this._internalPath) === 0) {
-                    console.log(absolutePath);
+        this.print = function (showContent) {
+            var res = [];
+            var that = this;
+            
+            this._iterate(function(node){
+                if (showContent) {
+                    res.push(node._internalPath.replace(rootkey, 'root') + ' - ' + JSON.stringify(that._nodeHash[node._internalPath].value));
+                } else {
+                    res.push(node._internalPath.replace(rootkey, 'root'));
                 }
-            }
+            });
+            return res;
         };
+        
+        // ////////////////////////
+        // Constructor
+        // ////////////////////////
+        if(obj){
+            this._nodeHash = {};
+            this.pathArray = [];
+            this.path = '';
+            this.value = obj;
+            this.level = 0;
+            this.isRoot = true;
+            this.isLeaf = isItLeaf(obj);
+            this.isCircular = false;
+            this._internalPath = rootkey;
+            this._nodeHash[rootkey] = this;
+            this.parent = this;
+            this.refresh();
+        }
+    };
+
+    var isItLeaf = function (val) {
+        var isArray = val instanceof Array;
+        var isObject = typeof val === 'object' && !isArray;
+
+        // Leaf
+        var notLeaf = (isObject && val !== null) || isArray;
+        return !notLeaf;
     };
 
     var traverse = function (obj, callback) {
         var seenObjects = [];
 
         var recurse = function (key, val, parent, isRoot, path, level) {
-            // if(key==='d') debugger;
             var isArray = val instanceof Array;
             var isObject = typeof val === 'object' && !isArray;
-            var isNull = val === null;
 
             // Leaf
-            var notLeaf = (isObject && !isNull) || isArray;
-            var isLeaf = !notLeaf;
+            var isLeaf = isItLeaf(val);
 
             // Circular
             var isCircular = false;
@@ -182,10 +310,6 @@ Jef = function () {
                 seenObjects.push(val);
             }
 
-            // console.log('key: ' + key + ', isRoot: ' + isRoot + ', isLeaf: '
-            // +
-            // isLeaf + ', level: ' + level + ', isCircular: ' + isCircular + ',
-            // path: ' + path);
             callback(key, val, path, parent, level, isRoot, isLeaf, isCircular);
             if (!isCircular) {
                 var childKey, newPath;
@@ -212,63 +336,6 @@ Jef = function () {
     };
 
     var rootkey = '$root_4285190851';
-    var Jef = function (obj) {
-        this._traverse = function (obj) {
-            var nodeHash = {};
-            traverse(obj, function (key, val, path, parent, level, isRoot, isLeaf, isCircular) {
-                var node = new JefNode();
-                node._nodeHash = nodeHash;
-                node.pathArray = path;
-                node.path = _getPathStr(node.pathArray);
-                node.key = key;
-                node.value = val;
-                node.level = level;
-                node.isRoot = isRoot;
-                node.isLeaf = isLeaf;
-                node.isCircular = isCircular;
 
-                // internal path
-                if (node.level === 0) {
-                    node._internalPath = rootkey;
-                } else {
-                    node._internalPath = rootkey + '.' + _getPathStr(node.pathArray);
-                }
-
-                // hash
-                if (node.isRoot) {
-                    nodeHash[rootkey] = node;
-                } else {
-                    nodeHash[rootkey + '.' + node.path] = node;
-                }
-
-                // parent
-                var parentPath = node.pathArray.slice(0, node.pathArray.length - 1);
-                var parentNode;
-                if (parentPath.length === 0) {
-                    // root node
-                    parentNode = nodeHash[rootkey];
-                } else {
-                    parentNode = nodeHash[rootkey + '.' + _getPathStr(parentPath)];
-                }
-                if (parentNode) {
-                    node.parent = parentNode;
-                }
-                
-                // count
-                if(!node.isRoot){
-                    node.parent.count++;
-                }
-            });
-            return nodeHash;
-        };
-        this._build = function (obj) {
-            var nodeHash = this._traverse(obj);
-
-            return nodeHash[rootkey];
-        };
-
-        return this._build(obj);
-    };
-
-    return Jef;
-}();
+    return {'JefNode': JefNode, 'traverse': traverse};
+}().JefNode;
