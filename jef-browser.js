@@ -26,16 +26,6 @@ var Jef = function () {
     };
 
     var JefNode = function (obj) {
-        this.key = null;
-        this.value = null;
-        this.parent = null;
-        this.isRoot = null;
-        this.pathArray = [];
-        this.path = null;
-        this.isLeaf = null;
-        this.isCircular = null;
-        this.level = null;
-        this.count = 0;
         this.isEmpty = function () {
             return this.count === 0;
         };
@@ -165,14 +155,15 @@ var Jef = function () {
             return ({}).toString.call(this.value).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
         };
         /**
-         * Returns true if current value has any of the types given as arguments.
+         * Returns true if current value has any of the types given as
+         * arguments.
          */
-        this.hasType = function() {
-            if(arguments.length===1){
-                return this.type()===arguments[0];
-            } else{
-                for(var i= 0; i<arguments.length; i++){
-                    if(this.type()===arguments[i]){
+        this.hasType = function () {
+            if (arguments.length === 1) {
+                return this.type() === arguments[0];
+            } else {
+                for (var i = 0; i < arguments.length; i++) {
+                    if (this.type() === arguments[i]) {
                         return true;
                     }
                 }
@@ -184,13 +175,13 @@ var Jef = function () {
             var that = this;
 
             var toDelete = {};
-            this._iterate(function(node){
-                if(node._internalPath!==that._internalPath){
-                  toDelete[node._internalPath] = true;
+            this._iterate(function (node) {
+                if (node._internalPath !== that._internalPath) {
+                    toDelete[node._internalPath] = true;
                 }
             });
 
-            traverse(this.value, function (key, val, path, parent, level, isRoot, isLeaf, isCircular) {
+            traverse(this.value, function (key, val, path, parentKey, parentVal, level, isRoot, isLeaf, isCircular) {
                 if (isRoot) {
                     return;
                 }
@@ -237,7 +228,7 @@ var Jef = function () {
             });
 
             // remove nodes that no longer exist
-            for (var internalPath in toDelete) {
+            for ( var internalPath in toDelete) {
                 if (toDelete[internalPath] === true) {
                     delete this._nodeHash[internalPath];
                 }
@@ -253,8 +244,8 @@ var Jef = function () {
         this.print = function (showContent) {
             var res = [];
             var that = this;
-            
-            this._iterate(function(node){
+
+            this._iterate(function (node) {
                 if (showContent) {
                     res.push(node._internalPath.replace(rootkey, 'root') + ' - ' + JSON.stringify(that._nodeHash[node._internalPath].value));
                 } else {
@@ -263,11 +254,12 @@ var Jef = function () {
             });
             return res;
         };
-        
+
         // ////////////////////////
         // Constructor
         // ////////////////////////
-        if(obj){
+        this.count = 0;
+        if (obj) {
             this._nodeHash = {};
             this.pathArray = [];
             this.path = '';
@@ -295,7 +287,7 @@ var Jef = function () {
     var traverse = function (obj, callback) {
         var seenObjects = [];
 
-        var recurse = function (key, val, parent, isRoot, path, level) {
+        var recurse = function (key, val, parentKey, parentVal, isRoot, path, level) {
             var isArray = val instanceof Array;
             var isObject = typeof val === 'object' && !isArray;
 
@@ -310,7 +302,7 @@ var Jef = function () {
                 seenObjects.push(val);
             }
 
-            callback(key, val, path, parent, level, isRoot, isLeaf, isCircular);
+            callback(key, val, path, parentKey, parentVal, level, isRoot, isLeaf, isCircular);
             if (!isCircular) {
                 var childKey, newPath;
                 if (isObject) {
@@ -318,7 +310,7 @@ var Jef = function () {
                         newPath = path.concat([
                             childKey
                         ]);
-                        recurse(childKey, val[childKey], val, false, newPath, level + 1);
+                        recurse(childKey, val[childKey], key, val, false, newPath, level + 1);
                     }
                 }
                 if (isArray) {
@@ -327,17 +319,20 @@ var Jef = function () {
                         newPath = path.concat([
                             childKey
                         ]);
-                        recurse(childKey, val[i], val, false, newPath, level + 1);
+                        recurse(childKey, val[i], key, val, false, newPath, level + 1);
                     }
                 }
             }
         };
-        recurse(undefined, obj, undefined, true, [], 0);
+        recurse(undefined, obj, undefined, undefined, true, [], 0);
     };
 
     var rootkey = '$root_4285190851';
 
-    return {'JefNode': JefNode, 'traverse': traverse};
+    return {
+        'JefNode' : JefNode,
+        'traverse' : traverse
+    };
 }();
 var JefNode = Jef.JefNode;
 var traverse = Jef.traverse;

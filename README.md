@@ -34,7 +34,7 @@ Any newly instantiated JefNode object is actually a structure wrapping the real 
 The purpose of this structure is to allow easy tree navigation. Each JefNode maintains properties such as 'parent' which returns the ancestor or get(path) which returns a child based on its relative path.
 In fact 'new JefNode(obj)' returns the root JefNode which is further used to [filter()](exFilter), [validate()](exValidate) or [remove()](exRemove).
 
-####A Word on performance
+####A word on performance
 It is obvious already that json-easy-filter is designed more towards convenience rather than being performance wise. Particularly using it on server side or feeding large files may pose a problem for high request rate apps. 
 If this is the case, Jef exposes its own internal [traversal](exTraverse) mechsnism or you may try one of the similar projects presented in [links](#Links) section.
 

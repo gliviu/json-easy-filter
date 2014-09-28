@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  	<script src="../jef-browser.min.js"></script>
+  	<script src="sampleData1.js"></script>
+  </head>
+
+  <body>
+  
+	<script>
+		var res = [];
+		traverse(sample1, function (key, val, path, parentKey, parentVal, level, isRoot, isLeaf, isCircular) {
+			debugger;
+			if (parentKey && parentKey === 'departments') {
+				// inside department
+				res.push('key: ' + key + ', val: ' + val.name + ', path: ' + path);
+			}
+		})
+		alert(res);
+
+		res = new JefNode(sample1).filter(function(node) {
+			if (node.has('username')) {
+				return node.value.username;
+			}
+		});
+		alert(JSON.stringify(res, null, 4));
+	</script>
+  </body>
+
+</html>
