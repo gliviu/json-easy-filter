@@ -36,7 +36,7 @@ In fact 'new JefNode(obj)' returns the root JefNode which is further used to [fi
 
 ####A word on performance
 It is obvious already that json-easy-filter is designed more towards convenience rather than being performance wise. Particularly using it on server side or feeding large files may pose a problem for high request rate apps. 
-If this is the case, Jef exposes its own internal [traversal](exTraverse) mechsnism or you may try one of the similar projects presented in [links](#Links) section.
+If this is the case, Jef exposes its own internal [traversal](exTraverse) mechanism or you may try one of the similar projects presented in [links](#Links) section.
 
 #### Filter, validate, remove
 Tree traversal is provided by `JefNode.filter(callback)` . It will recursively iterate each node and trigger the callback method which receives the currently traveled JefNode. Use `node.value` and `node.key` to get access to the real json object. Use `parent`, `path` and `get()` to navigate the tree. Use `isRoot`, `isLeaf`, `isCircular` for information about current node. `level` provides the traversal depth. 
@@ -327,7 +327,7 @@ true
 <a name="exTraverse"></a>
 ### Traverse
 Internal Json traversal mechanism is exposed for cases where performance is an issue.
-[plunkr](http://plnkr.co/edit/UzVghb) todo
+[plunkr](http://plnkr.co/edit/8DfcTh)
 ```js
 var traverse = require('json-easy-filter').traverse;
 var res = [];
@@ -353,11 +353,7 @@ console.log(res);
 <a name="API"></a>
 ## API
 
-**Jef class**
-* `Jef(jsonData)` - traverses jsonData and computes a collection of `JefNode` objects used later for filter/validate operations. Returns the root `JefNode`.
-
 **JefNode class**
-Wrapps a real Js node inside the tree that is traversed.
 * `node.key` - the key of the currently traversed object.
 * `node.value` - the value of the currently traversed object.
 * `node.isRoot` - true if current node is the root of the object tree.
@@ -370,6 +366,7 @@ Wrapps a real Js node inside the tree that is traversed.
 * `node.has(propertyName)` - returns true if `node.value` has that property. If a regular expression is passed, all `node.value` property names are iterated and matched against pattern. 
 * `node.get(relativePath)` - returns the `JefNode` relative to current node or 'undefined' if path cannot be found.
 * `node.type()` - returns the type of `node.value` as one of 'string', 'array', 'object', 'function', 'number', 'boolean', 'undefined', 'null'.
+* `node.hasType(types)` - compares against multiple types - node.hasType('number', 'object') returns true if node is either of the two  types.
 * `node.isEmpty()` - returns true if this object/array has no children/elements.
 * `node.filter(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. The result of callback call is added to an array which is later returned by filter method. When filter method is called for a node other than root, `localContext` holds info relative to that node. If it is called for root `localContext` is equivalent to `childNode`. See `JefLocalContext` class below.   
 * `node.validate(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. If any of the calls to callback method returns false, validate method will also return false. `localContext` is treated the same as for filter method.
