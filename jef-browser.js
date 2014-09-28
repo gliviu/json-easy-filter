@@ -1,4 +1,4 @@
-var JefNode = function () {
+var Jef = function () {
     "use strict";
 
     var _getPathStr = function (path, delimiter) {
@@ -338,4 +338,6 @@ var JefNode = function () {
     var rootkey = '$root_4285190851';
 
     return {'JefNode': JefNode, 'traverse': traverse};
-}().JefNode;
+}();
+var JefNode = Jef.JefNode;
+var traverse = Jef.traverse;
