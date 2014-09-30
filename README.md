@@ -51,7 +51,7 @@ Check out the examples and [API](#API) for more info.
 Use the <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/master/tests/sampleData1.js" target="_blank">sample</a> data to follow this section.
 
 <a name="exFilter"></a>
-### Filter
+#### Filter
 &#35;1. node.has() [plunkr](http://plnkr.co/edit/nPwRhF)
 
 ```js
@@ -188,7 +188,7 @@ console.log(res);
 ```
 
 <a name="exValidate"></a>
-### Validate
+#### Validate
 &#35;1. node.validate() [plunkr](http://plnkr.co/edit/L7q3VH)
 ```js
 var res = new JefNode(sample1).validate(function(node) {
@@ -272,7 +272,7 @@ false
 
 
 <a name="exRemove"></a>
-### Remove
+#### Remove
 Instead of using filter() for deleting certain nodes, remove() makes it easy by just requiring to return the nodes to be deleted from the callback.
 
 [plunkr](http://plnkr.co/edit/UzVghb)
@@ -325,7 +325,7 @@ console.log(success);
 true
 ```
 <a name="exTraverse"></a>
-### Traverse
+#### Traverse
 Internal Json traversal mechanism is exposed for cases where performance is an issue.
 [plunkr](http://plnkr.co/edit/8DfcTh)
 ```js
@@ -348,7 +348,8 @@ console.log(res);
 	  'key: supply, val: undefined, path: departments,supply' ]
  
 ```
-
+### Tests
+Make sure it's all working with 'npm test'. The awesome tool behinde code coverage statistics is [istanbul](https://www.npmjs.org/package/istanbul).
 
 <a name="API"></a>
 ## API
@@ -398,3 +399,4 @@ v0.3.0
 * Filter, map, reduce - <a href="https://www.npmjs.org/package/traverse" target="_blank">traverse</a>
 * Json validator - <a href="https://www.npmjs.org/package/json-filter" target="_blank">json-filter</a>, <a href="https://www.npmjs.org/package/json-validator" target="_blank">json-validator</a>
 * Linq - <a href="http://jlinq.codeplex.com/wikipage?title=Command%20List" target="_blank">jLinq</a>, <a href="http://jslinq.codeplex.com/" target="_blank">jslinq</a>
+* [istanbul](https://www.npmjs.org/package/istanbul) - epic javascript code coverage tool
