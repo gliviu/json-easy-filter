@@ -15,13 +15,14 @@ module.exports = function () {
         return res;
     };
 
-    var JefLocalContext = function (localNode, globalNode) {
+    var JefLocalContext = function (localNode, rootNode) {
         this.isRoot = false;
-        if (globalNode.path === localNode.path) {
+        this.root = rootNode;
+        if (rootNode.path === localNode.path) {
             this.isRoot = true;
         }
-        this.level = localNode.pathArray.length - globalNode.pathArray.length;
-        this.pathArray = localNode.pathArray.slice(globalNode.pathArray.length, localNode.pathArray.length);
+        this.level = localNode.pathArray.length - rootNode.pathArray.length;
+        this.pathArray = localNode.pathArray.slice(rootNode.pathArray.length, localNode.pathArray.length);
         this.path = _getPathStr(this.pathArray);
     };
 
@@ -193,6 +194,7 @@ module.exports = function () {
                 if (!that._nodeHash[internalPath]) {
                     node = new JefNode();
                     node._nodeHash = that._nodeHash;
+                    node.root = that._nodeHash[rootkey];
                     node._internalPath = internalPath;
                     node.pathArray = that.pathArray.concat(path);
                     node.path = that.isRoot ? _getPathStr(node.pathArray) : that.path + '.' + _getPathStr(node.pathArray);
@@ -260,6 +262,7 @@ module.exports = function () {
         // ////////////////////////
         this.count = 0;
         if (obj) {
+            this.root = this;
             this._nodeHash = {};
             this.pathArray = [];
             this.path = '';

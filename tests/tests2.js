@@ -347,6 +347,21 @@ var Tests2 = function () {
         ]);
         return testResult;
     };
+    // node.root, localContext.root
+    this.test13 = function () {
+        var res = new JefNode(sample1).get('employees.5').filter(function(node, localContext){
+            return 'path: '+node.path+', root: '+(node.root.value===sample1)+', local root: '+localContext.root.path;
+        });
+        if (false) {
+            console.log(JSON.stringify(res, null, 4));
+        }
+        var testResult = JSON.stringify(res) === JSON.stringify([
+                                                                 "path: employees.5, root: true, local root: employees.5",
+                                                                 "path: employees.5.firstName, root: true, local root: employees.5",
+                                                                 "path: employees.5.lastName, root: true, local root: employees.5"
+                                                             ]);
+        return testResult;
+    };
 };
 
 module.exports = function () {

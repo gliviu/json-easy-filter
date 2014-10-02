@@ -32,7 +32,7 @@ console.log(numbers);
 #### How it works
 Any newly instantiated JefNode object is actually a structure wrapping the real Json object  so that for each Json node there will be a corresponding JefNode. 
 The purpose of this structure is to allow easy tree navigation. Each JefNode maintains properties such as 'parent' which returns the ancestor or get(path) which returns a child based on its relative path.
-In fact 'new JefNode(obj)' returns the root JefNode which is further used to [filter()](exFilter), [validate()](exValidate) or [remove()](exRemove).
+In fact 'new JefNode(obj)' returns the root JefNode which is further used to [filter()](#exFilter), [validate()](#exValidate) or [remove()](#exRemove).
 
 ####A word on performance
 It is obvious already that json-easy-filter is designed more towards convenience rather than being performance wise. Particularly using it on server side or feeding large files may pose a problem for high request rate apps. 
@@ -360,6 +360,7 @@ Make sure it's all working with 'npm test'. The awesome tool behinde code covera
 * `node.isRoot` - true if current node is the root of the object tree.
 * `node.pathArray` - string array containing the path to current node.
 * `node.path` - string representation of `node.pathArray`.
+* `node.root` - root `JefNode`.
 * `node.level` - level of the current node. Root node has level 0.
 * `node.isLeaf` - node is leaf. For `{x: '{y: 'z'}, A: {}}`, `A: {}` is not considered leaf node.
 * `node.isCircular` - indicates a circular reference 
@@ -376,10 +377,11 @@ Make sure it's all working with 'npm test'. The awesome tool behinde code covera
 `node.remove(callback)` returns: true in case of success; false if anything other than JefNode is returned by callback method.
 
 **JefLocalContext class**
-* `localContext.isRoot` - true if current node is the root of the object tree relative to current filter/validate operation.
-* `localContext.pathArray` - string array containing the path to current node relative to current filter/validate operation.
+* `localContext.isRoot` - true if current node is the one that started filter/validate/remove operation.
+* `localContext.pathArray` - string array containing the path to current node relative to current filter/validate/remove operation.
 * `localContext.path` - string representation of `localContext.pathArray`.
 * `localContext.level` - level of the current node relative to current filter/validate operation.
+* `localContext.root` - node that started filter/validate/remove operation.
 
 
 ## Changelog
@@ -389,7 +391,7 @@ v0.3.0
 * addedd node.remove()
 * node.isLeaf behavour no longer works as in 0.3.0. See API.
 * removed dependecy on <a href="https://www.npmjs.org/package/traverse" target="_blank">traverse</a>
-* added node.count and node.isEmpty()
+* added node.count, node.isEmpty(), node.root
 * added node.refresh() to support json content modification
 * bug fixes
 
