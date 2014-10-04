@@ -401,4 +401,3 @@ v0.3.0
 * Filter, map, reduce - <a href="https://www.npmjs.org/package/traverse" target="_blank">traverse</a>
 * Json validator - <a href="https://www.npmjs.org/package/json-filter" target="_blank">json-filter</a>, <a href="https://www.npmjs.org/package/json-validator" target="_blank">json-validator</a>
 * Linq - <a href="http://jlinq.codeplex.com/wikipage?title=Command%20List" target="_blank">jLinq</a>, <a href="http://jslinq.codeplex.com/" target="_blank">jslinq</a>
-* [istanbul](https://www.npmjs.org/package/istanbul) - epic javascript code coverage tool

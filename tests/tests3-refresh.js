@@ -202,14 +202,14 @@ var Tests3 = function () {
                 'root.x1.a4',
                 'root.x1.a4.b4',
                 'root.x1.a4.b4.c1',
-                'root.x2',
-                'root.x3',
-                'root.x3.y1',
                 'root.x1.a4.b4.c2',
                 'root.x1.a4.b4.c2.d1',
                 'root.x1.a4.b4.c2.d2',
                 'root.x1.a4.b4.c2.d2.e1',
-                'root.x1.a5'
+                'root.x1.a5',
+                'root.x2',
+                'root.x3',
+                'root.x3.y1'
         ].toString();
         return testResult;
     };
@@ -299,18 +299,37 @@ var Tests3 = function () {
             console.log(res1);
             console.log(res2);
         }
-        var testResult1 = res1.toString() === [ 'root',
-                                                'root.a1',
-                                                'root.a1.a2',
-                                                'root.a2',
-                                                'root.a3',
-                                                'root.a5',
-                                                'root.a5.a6',
-                                                'root.a5.a8' ].toString();
-        var testResult2 = res2.toString() === [ 'root.a5', 'root.a5.a6', 'root.a5.a8' ].toString();
+        var testResult1 = res1.toString() === [
+                'root', 'root.a1', 'root.a1.a2', 'root.a2', 'root.a3', 'root.a5', 'root.a5.a6', 'root.a5.a8'
+        ].toString();
+        var testResult2 = res2.toString() === [
+                'root.a5', 'root.a5.a6', 'root.a5.a8'
+        ].toString();
         return testResult1 && testResult2;
     };
-    
+    // bug fix: wrong iteration order after refresh()
+    this.test7 = function () {
+        var data = {
+            a1 : 'a1',
+            a2 : 'a2'
+        };
+        var jef = new JefNode(data);
+        data.a1 = {
+            a3 : 'a3'
+        };
+        jef.refresh();
+        var res = [];
+        jef.filter(function (node) {
+            if(!node.isRoot)
+            res.push(node.path);
+        });
+        if (false) {
+            console.log(res);
+        }
+        var testResult = JSON.stringify(res) === JSON.stringify([ 'a1', 'a1.a3', 'a2' ]);
+        return testResult;
+    };
+
 };
 
 module.exports = function () {

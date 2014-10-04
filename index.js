@@ -47,23 +47,18 @@ module.exports = function () {
          * Internal method for iterating 'this' and its children.
          */
         this._iterate = function (iterCallback) {
-            var internalPath = this._internalPath + '.';
-            // iterate local root
-            iterCallback(this);
-
-            // iterate children
-            for ( var absolutePath in this._nodeHash) {
-                if (absolutePath.indexOf(internalPath) === 0) {
-                    var node = this._nodeHash[absolutePath];
-                    iterCallback(node);
-                }
-            }
+            var that = this;
+            traverse(this.value, function (key, val, pathArr, parentKey, parentVal, level, isRoot) {
+                var pathStr = that._internalPath + (isRoot ? '' : '.' + _getPathStr(pathArr));
+                var node = that._nodeHash[pathStr];
+                iterCallback(node);
+            });
         };
 
         this.filter = function (callback) {
             var result = [];
-
             var that = this;
+
             this._iterate(function (node) {
                 var resCallBack = callback(node, new JefLocalContext(node, that));
                 if (resCallBack !== undefined) {
@@ -173,15 +168,18 @@ module.exports = function () {
         };
 
         this.refresh = function () {
-            var that = this;
 
+            // mark all children to be deleted. later they will be unmarked if
+            // necessary
             var toDelete = {};
-            this._iterate(function (node) {
-                if (node._internalPath !== that._internalPath) {
-                    toDelete[node._internalPath] = true;
+            var internalPath = this._internalPath + '.';
+            for ( var absolutePath in this._nodeHash) {
+                if (absolutePath.indexOf(internalPath) === 0) {
+                    toDelete[absolutePath] = true;
                 }
-            });
+            }
 
+            var that = this;
             traverse(this.value, function (key, val, path, parentKey, parentVal, level, isRoot, isLeaf, isCircular) {
                 if (isRoot) {
                     return;
