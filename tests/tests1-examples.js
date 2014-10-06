@@ -349,7 +349,6 @@ var Tests1 = function () {
         var traverse = require('json-easy-filter').traverse;
         var res = [];
         traverse(sample1, function (key, val, path, parentKey, parentVal, level, isRoot, isLeaf, isCircular) {
-            debugger;
             if (parentKey && parentKey === 'departments') {
                 // inside department
                 res.push('key: ' + key + ', val: ' + val.name + ', path: ' + path);

@@ -55,18 +55,33 @@ module.exports = function () {
             });
         };
 
-        this.filter = function (callback) {
+        this._filter = function (callback, level) {
             var result = [];
             var that = this;
 
             this._iterate(function (node) {
-                var resCallBack = callback(node, new JefLocalContext(node, that));
-                if (resCallBack !== undefined) {
-                    result.push(resCallBack);
+                var localContext = new JefLocalContext(node, that)
+                if(!level || (level && localContext.level === level)){
+                    var resCallBack = callback(node, localContext);
+                    if (resCallBack !== undefined) {
+                        result.push(resCallBack);
+                    }
                 }
             });
             return result;
         };
+
+        this.filter = function (callback) {
+            return this._filter(callback);
+        };
+        
+        this.filterFirst = function(callback){
+            return this._filter(callback, 1);
+        }
+
+        this.filterLevel = function(level, callback){
+            return this._filter(callback, level);
+        }
 
         this.validate = function (callback) {
             var result = true;

@@ -347,19 +347,89 @@ var Tests2 = function () {
         ]);
         return testResult;
     };
+
     // node.root, localContext.root
     this.test13 = function () {
-        var res = new JefNode(sample1).get('employees.5').filter(function(node, localContext){
-            return 'path: '+node.path+', root: '+(node.root.value===sample1)+', local root: '+localContext.root.path;
+        var res = new JefNode(sample1).get('employees.5').filter(function (node, localContext) {
+            return 'path: ' + node.path + ', root: ' + (node.root.value === sample1) + ', local root: ' + localContext.root.path;
         });
         if (false) {
             console.log(JSON.stringify(res, null, 4));
         }
         var testResult = JSON.stringify(res) === JSON.stringify([
-                                                                 "path: employees.5, root: true, local root: employees.5",
-                                                                 "path: employees.5.firstName, root: true, local root: employees.5",
-                                                                 "path: employees.5.lastName, root: true, local root: employees.5"
-                                                             ]);
+                "path: employees.5, root: true, local root: employees.5",
+                "path: employees.5.firstName, root: true, local root: employees.5",
+                "path: employees.5.lastName, root: true, local root: employees.5"
+        ]);
+        return testResult;
+    };
+
+    // filterFirst()
+    this.test14 = function () {
+        var res1 = new JefNode(sample1).filterFirst(function (node, localContext) {
+            return 'path: ' + node.path + ', level: ' + node.level + ', local level: ' + localContext.level;
+        });
+        var res2 = new JefNode(sample1).get('departments').filterFirst(function (node, localContext) {
+            return 'path: ' + node.path + ', level: ' + node.level + ', local level: ' + localContext.level;
+        });
+        var res3 = new JefNode(sample1).filterLevel(2, function (node, localContext) {
+            return 'path: ' + node.path + ', level: ' + node.level + ', local level: ' + localContext.level;
+        });
+        var res4 = new JefNode(sample1).get('departments').filterLevel(2, function (node, localContext) {
+            return 'path: ' + node.path + ', level: ' + node.level + ', local level: ' + localContext.level;
+        });
+        if (false) {
+            console.log('res1:');
+            console.log(JSON.stringify(res1, null, 4));
+            console.log('res2:');
+            console.log(JSON.stringify(res2, null, 4));
+            console.log('res3:');
+            console.log(JSON.stringify(res3, null, 4));
+            console.log('res4:');
+            console.log(JSON.stringify(res4, null, 4));
+        }
+        var testResult1 =JSON.stringify(res1) === JSON.stringify([
+                                                                  "path: departments, level: 1, local level: 1",
+                                                                  "path: employees, level: 1, local level: 1"
+                                                              ]); 
+        var testResult2 =JSON.stringify(res2) === JSON.stringify([
+                                                                  "path: departments.admin, level: 2, local level: 1",
+                                                                  "path: departments.it, level: 2, local level: 1",
+                                                                  "path: departments.finance, level: 2, local level: 1",
+                                                                  "path: departments.marketing, level: 2, local level: 1",
+                                                                  "path: departments.hr, level: 2, local level: 1",
+                                                                  "path: departments.supply, level: 2, local level: 1"
+                                                              ]); 
+        var testResult3 =JSON.stringify(res3) === JSON.stringify([
+                                                                  "path: departments.admin, level: 2, local level: 2",
+                                                                  "path: departments.it, level: 2, local level: 2",
+                                                                  "path: departments.finance, level: 2, local level: 2",
+                                                                  "path: departments.marketing, level: 2, local level: 2",
+                                                                  "path: departments.hr, level: 2, local level: 2",
+                                                                  "path: departments.supply, level: 2, local level: 2",
+                                                                  "path: employees.0, level: 2, local level: 2",
+                                                                  "path: employees.1, level: 2, local level: 2",
+                                                                  "path: employees.2, level: 2, local level: 2",
+                                                                  "path: employees.3, level: 2, local level: 2",
+                                                                  "path: employees.4, level: 2, local level: 2",
+                                                                  "path: employees.5, level: 2, local level: 2"
+                                                              ]); 
+        var testResult4 =JSON.stringify(res4) === JSON.stringify([
+                                                                  "path: departments.admin.name, level: 3, local level: 2",
+                                                                  "path: departments.admin.manager, level: 3, local level: 2",
+                                                                  "path: departments.admin.employees, level: 3, local level: 2",
+                                                                  "path: departments.it.name, level: 3, local level: 2",
+                                                                  "path: departments.it.manager, level: 3, local level: 2",
+                                                                  "path: departments.it.employees, level: 3, local level: 2",
+                                                                  "path: departments.finance.name, level: 3, local level: 2",
+                                                                  "path: departments.finance.manager, level: 3, local level: 2",
+                                                                  "path: departments.finance.employees, level: 3, local level: 2",
+                                                                  "path: departments.marketing.name, level: 3, local level: 2",
+                                                                  "path: departments.marketing.employees, level: 3, local level: 2",
+                                                                  "path: departments.hr.name, level: 3, local level: 2",
+                                                                  "path: departments.supply.employees, level: 3, local level: 2"
+                                                              ]); 
+        var testResult = testResult1 && testResult2 && testResult3 && testResult4;
         return testResult;
     };
 };

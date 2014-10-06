@@ -370,7 +370,9 @@ Make sure it's all working with 'npm test'. The awesome tool behinde code covera
 * `node.type()` - returns the type of `node.value` as one of 'string', 'array', 'object', 'function', 'number', 'boolean', 'undefined', 'null'.
 * `node.hasType(types)` - compares against multiple types - node.hasType('number', 'object') returns true if node is either of the two  types.
 * `node.isEmpty()` - returns true if this object/array has no children/elements.
-* `node.filter(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. The result of callback call is added to an array which is later returned by filter method. When filter method is called for a node other than root, `localContext` holds info relative to that node. If it is called for root `localContext` is equivalent to `childNode`. See `JefLocalContext` class below.   
+* `node.filter(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. The result of callback call is added to an array which is later returned by filter method. When filter method is called for a node other than root, `localContext` holds info relative to that node. If it is called for root `localContext` is equivalent to `childNode`. See `JefLocalContext` class below.
+* `node.filterFirst(callback)` - use this to traverse the first level (direct children) of node.
+* `node.filterLevel(level, callback)` - iterates only nodes at specified level.
 * `node.validate(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. If any of the calls to callback method returns false, validate method will also return false. `localContext` is treated the same as for filter method.
 * `node.remove(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. Callback method is expected to return the nodes to be deleted. Either a JefNode or an array of JefNode objects may be returned. After traversal is completed the nodes are removed from Js tree. The root object is never deleted.
 * `node.refresh()` - call this to update Jef object after any of node's content have been created/updated/deleted.
@@ -391,7 +393,7 @@ v0.3.0
 * addedd node.remove()
 * node.isLeaf behavour no longer works as in 0.3.0. See API.
 * removed dependecy on <a href="https://www.npmjs.org/package/traverse" target="_blank">traverse</a>
-* added node.count, node.isEmpty(), node.root
+* added node.count, node.isEmpty(), node.root, filterFirst(), filterLevel()
 * added node.refresh() to support json content modification
 * bug fixes
 
