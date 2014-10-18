@@ -36,14 +36,14 @@ In fact 'new JefNode(obj)' returns the root JefNode which is further used to [fi
 
 ####A word on performance
 It is obvious already that json-easy-filter is designed more towards convenience rather than being performance wise. Particularly using it on server side or feeding large files may pose a problem for high request rate apps. 
-If this is the case, Jef exposes its own internal [traversal](exTraverse) mechanism or you may try one of the similar projects presented in [links](#Links) section.
+If this is the case, Jef exposes its own internal [traversal](#exTraverse) mechanism or you may try one of the similar projects presented in [links](#Links) section.
 
 #### Filter, validate, remove
 Tree traversal is provided by `JefNode.filter(callback)` . It will recursively iterate each node and trigger the callback method which receives the currently traveled JefNode. Use `node.value` and `node.key` to get access to the real json object. Use `parent`, `path` and `get()` to navigate the tree. Use `isRoot`, `isLeaf`, `isCircular` for information about current node. `level` provides the traversal depth. 
 
-Do not change Json object during filter() call. Keep a list of changes and apply it after filter has finished. For convenience, [remove()](exRemove) will iterate the tree and delete nodes passed back by the callback.
+Do not change Json object during filter() call. Keep a list of changes and apply it after filter has finished. For convenience, [remove()](#exRemove) will iterate the tree and delete nodes passed back by the callback.
 
-Aside from filter and remove, there is also a [validate()](exValidate) method. Returning false from callback will cause the whole validation to fail.
+Aside from filter and remove, there is also a [validate()](#exValidate) method. Returning false from callback will cause the whole validation to fail.
 
 Check out the examples and [API](#API) for more info.
 
@@ -349,20 +349,20 @@ console.log(res);
  
 ```
 ### Tests
-Make sure it's all working with 'npm test'. The awesome tool behinde code coverage statistics is [istanbul](https://www.npmjs.org/package/istanbul).
+Make sure it's all working with 'npm test'. The awesome [istanbul](https://www.npmjs.org/package/istanbul) tool provides code coverage.
 
 <a name="API"></a>
 ## API
 
 **JefNode class**
-* `node.key` - the key of the currently traversed object.
-* `node.value` - the value of the currently traversed object.
+* `node.key` - node's key. For root object it is undefined.
+* `node.value` - the real Json value behind node.
 * `node.isRoot` - true if current node is the root of the object tree.
 * `node.pathArray` - string array containing the path to current node.
 * `node.path` - string representation of `node.pathArray`.
 * `node.root` - root `JefNode`.
 * `node.level` - level of the current node. Root node has level 0.
-* `node.isLeaf` - node is leaf. For `{x: '{y: 'z'}, A: {}}`, `A: {}` is not considered leaf node.
+* `node.isLeaf` - true if it is a leaf node. Primitives are considered leafs, empty objects (ie. `a: { }`) are not.
 * `node.isCircular` - indicates a circular reference 
 * `node.count` - number of first level child nodes. For array indicates nuber of elements. 
 * `node.has(propertyName)` - returns true if `node.value` has that property. If a regular expression is passed, all `node.value` property names are iterated and matched against pattern. 
@@ -370,19 +370,19 @@ Make sure it's all working with 'npm test'. The awesome tool behinde code covera
 * `node.type()` - returns the type of `node.value` as one of 'string', 'array', 'object', 'function', 'number', 'boolean', 'undefined', 'null'.
 * `node.hasType(types)` - compares against multiple types - node.hasType('number', 'object') returns true if node is either of the two  types.
 * `node.isEmpty()` - returns true if this object/array has no children/elements.
-* `node.filter(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. The result of callback call is added to an array which is later returned by filter method. When filter method is called for a node other than root, `localContext` holds info relative to that node. If it is called for root `localContext` is equivalent to `childNode`. See `JefLocalContext` class below.
+* `node.filter(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. The result of callback call is added to an array which is later returned by filter method. When filter method is called for a node other than root, `localContext` holds info relative to that node. If it is called for root, there is no reason to use `localContext`. See `JefLocalContext` class below.
 * `node.filterFirst(callback)` - use this to traverse the first level (direct children) of node.
 * `node.filterLevel(level, callback)` - iterates only nodes at specified level.
 * `node.validate(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. If any of the calls to callback method returns false, validate method will also return false. `localContext` is treated the same as for filter method.
-* `node.remove(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. Callback method is expected to return the nodes to be deleted. Either a JefNode or an array of JefNode objects may be returned. After traversal is completed the nodes are removed from Js tree. The root object is never deleted.
+* `node.remove(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. Callback method is expected to return the nodes to be deleted. Either a JefNode or an array of JefNode objects may be returned. After traversal is complete the nodes are removed from Js tree. The root object is never deleted. 
 * `node.refresh()` - call this to update Jef object after any of node's content have been created/updated/deleted.
-`node.remove(callback)` returns: true in case of success; false if anything other than JefNode is returned by callback method.
+
 
 **JefLocalContext class**
 * `localContext.isRoot` - true if current node is the one that started filter/validate/remove operation.
-* `localContext.pathArray` - string array containing the path to current node relative to current filter/validate/remove operation.
+* `localContext.pathArray` - string array containing the path to this node relative to current filter/validate/remove operation.
 * `localContext.path` - string representation of `localContext.pathArray`.
-* `localContext.level` - level of the current node relative to current filter/validate operation.
+* `localContext.level` - level of this node relative to current filter/validate operation.
 * `localContext.root` - node that started filter/validate/remove operation.
 
 
