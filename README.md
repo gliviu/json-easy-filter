@@ -357,6 +357,7 @@ Make sure it's all working with 'npm test'. The awesome [istanbul](https://www.n
 **JefNode class**
 * `node.key` - node's key. For root object it is undefined.
 * `node.value` - the real Json value behind node.
+* `node.parent` - node's parent. Root's parent points to itself so that node.parent is never undefined.
 * `node.isRoot` - true if current node is the root of the object tree.
 * `node.pathArray` - string array containing the path to current node.
 * `node.path` - string representation of `node.pathArray`.

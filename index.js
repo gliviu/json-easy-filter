@@ -216,15 +216,11 @@ module.exports = function () {
 
                     // parent
                     var parentPath = node.pathArray.slice(0, node.pathArray.length - 1);
-                    var parentNode;
                     if (parentPath.length === 0) {
                         // parent is root node
-                        parentNode = that._nodeHash[rootkey];
+                        node.parent = that._nodeHash[rootkey];
                     } else {
-                        parentNode = that._nodeHash[rootkey + '.' + _getPathStr(parentPath)];
-                    }
-                    if (parentNode) {
-                        node.parent = parentNode;
+                        node.parent = that._nodeHash[rootkey + '.' + _getPathStr(parentPath)];
                     }
 
                     // count
