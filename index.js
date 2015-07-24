@@ -217,7 +217,7 @@ module.exports = function () {
                     // parent
                     var parentPath = node.pathArray.slice(0, node.pathArray.length - 1);
                     if (parentPath.length === 0) {
-                        // parent is root node
+                        // parent is root node; root's parent always points to itself
                         node.parent = that._nodeHash[rootkey];
                     } else {
                         node.parent = that._nodeHash[rootkey + '.' + _getPathStr(parentPath)];
