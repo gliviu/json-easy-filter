@@ -432,6 +432,37 @@ var Tests2 = function () {
         var testResult = testResult1 && testResult2 && testResult3 && testResult4;
         return testResult;
     };
+    
+    // Throw exception when json object is changed during traversal.
+    this.test15 = function () {
+        var obj = {
+                s1 : 'v1',
+                o2 : {
+                    text : 'v2'
+                },
+                o3 : {
+                    o4 : {
+                        text: 'aa'
+                    }
+                }
+            };
+
+        var exceptionMessage = null;
+        try{
+            new JefNode(obj).filter(function(node) {
+                if (node.has('text')){
+                    node.value.text = {x:'y'};
+                }
+            });
+        } catch(e){
+            exceptionMessage = e;
+        }
+        if (false) {
+            console.log('Exception message: '+exceptionMessage);
+        }
+        var testResult = exceptionMessage.indexOf('Json object has changed and is no longer synchronized to JefNode internal representation around')===0;
+        return testResult;
+    };
 };
 
 module.exports = function () {

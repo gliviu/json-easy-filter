@@ -49,8 +49,12 @@ module.exports = function () {
         this._iterate = function (iterCallback) {
             var that = this;
             traverse(this.value, function (key, val, pathArr, parentKey, parentVal, level, isRoot) {
-                var pathStr = that._internalPath + (isRoot ? '' : '.' + _getPathStr(pathArr));
-                var node = that._nodeHash[pathStr];
+                var internalPathStr = that._internalPath + (isRoot ? '' : '.' + _getPathStr(pathArr));
+                var node = that._nodeHash[internalPathStr];
+                if(node===undefined){
+                    var pathStr = _getPathStr(pathArr);
+                    throw "Json object has changed and is no longer synchronized to JefNode internal representation around '"+pathStr+"' . Avoid changing json object structure during filter(), delete() or validate(). Use refresh() to synchronize JafNode.";
+                }
                 iterCallback(node);
             });
         };
