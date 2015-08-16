@@ -34,18 +34,46 @@ Any newly instantiated JefNode object is actually a structure wrapping the real 
 The purpose of this structure is to allow easy tree navigation. Each JefNode maintains properties such as 'parent' which returns the ancestor or get(path) which returns a child based on its relative path.
 In fact 'new JefNode(obj)' returns the root JefNode which is further used to [filter()](#exFilter), [validate()](#exValidate) or [remove()](#exRemove).
 
-####A word on performance
+#### A word on performance
 It is obvious already that json-easy-filter is designed more towards convenience rather than being performance wise. Particularly using it on server side or feeding large files may pose a problem for high request rate apps. 
 If this is the case, Jef exposes its own internal [traversal](#exTraverse) mechanism or you may try one of the similar projects presented in [links](#Links) section.
 
 #### Filter, validate, remove
 Tree traversal is provided by `JefNode.filter(callback)` . It will recursively iterate each node and trigger the callback method which receives the currently traveled JefNode. Use `node.value` and `node.key` to get access to the real json object. Use `parent`, `path` and `get()` to navigate the tree. Use `isRoot`, `isLeaf`, `isCircular` for information about current node. `level` provides the traversal depth. 
 
-Do not change Json object during filter() call. Keep a list of changes and apply it after filter has finished. For convenience, [remove()](#exRemove) will iterate the tree and delete nodes passed back by the callback.
+**IMPORTANT** -  Do not change Json object during filter() call. Keep a separate list of changes and apply it after filter has finished. For convenience, [remove()](#exRemove) will iterate the tree and delete nodes passed back by the callback.
+Following example will structure of 'text' node.
+``` js
+var obj = {text : 't'};
+var modif = [];
+var res = new JefNode(obj).filter(function(node) {
+    if (node.has('text')){
+        modif.push({
+            parent: node.value, 
+            newVal: {'new':'val'}})
+    }
+});
+for (var i = 0; i < modif.length; i++) {
+    var elem = modif[i];
+    elem.parent.text = elem.newVal; 
+}
+console.log(JSON.stringify(obj, null, 2));
+```
+```
+Output
+{
+  "text": {
+    "new": "val"
+  }
+}
+
+```
+
 
 Aside from filter and remove, there is also a [validate()](#exValidate) method. Returning false from callback will cause the whole validation to fail.
 
 Check out the examples and [API](#API) for more info.
+
 
 ## Examples
 Use the <a href="https://raw.githubusercontent.com/gliviu/json-easy-filter/master/tests/sampleData1.js" target="_blank">sample</a> data to follow this section.
@@ -376,7 +404,7 @@ Make sure it's all working with 'npm test'. The awesome [istanbul](https://www.n
 * `node.filterLevel(level, callback)` - iterates only nodes at specified level.
 * `node.validate(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. If any of the calls to callback method returns false, validate method will also return false. `localContext` is treated the same as for filter method.
 * `node.remove(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. Callback method is expected to return the nodes to be deleted. Either a JefNode or an array of JefNode objects may be returned. After traversal is complete the nodes are removed from Js tree. The root object is never deleted. 
-* `node.refresh()` - call this to update Jef object after any of node's content have been created/updated/deleted.
+* `node.refresh()` - call this to update Jef object after any of node's content have been created/updated/deleted. Shall not be used inside `node.filter()`, `node.validate()`, `node.remove()`. Example: TODO
 
 
 **JefLocalContext class**
