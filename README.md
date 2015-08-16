@@ -58,9 +58,7 @@ for (var i = 0; i < modif.length; i++) {
     elem.parent.text = elem.newVal; 
 }
 console.log(JSON.stringify(obj, null, 2));
-```
-```
-Output
+>>
 {
   "text": {
     "new": "val"
@@ -68,8 +66,6 @@ Output
 }
 
 ```
-
-
 Aside from filter and remove, there is also a [validate()](#exValidate) method. Returning false from callback will cause the whole validation to fail.
 
 Check out the examples and [API](#API) for more info.
@@ -374,8 +370,33 @@ console.log(res);
 	  'key: marketing, val: Commercial, path: departments,marketing',
 	  'key: hr, val: Human resources, path: departments,hr',
 	  'key: supply, val: undefined, path: departments,supply' ]
- 
 ```
+
+#### Refresh
+refresh() is used to update Jef internal structure when structure of wrapped json changes.
+```js
+var root = new JefNode(obj);
+var res = root.filter(function(node) {
+    if (node.key==='text1'){
+        return node.value;
+    }
+});
+console.log(res);
+
+obj.text1 = {'new': 'val'};
+root.refresh();
+res = root.filter(function(node) {
+    if (node.key==='text1'){
+        return node.value;
+    }
+});
+console.log(res);
+
+>>
+[ 't1' ]
+[ { new: 'val' } ]
+```
+
 ### Tests
 Make sure it's all working with 'npm test'. The awesome [istanbul](https://www.npmjs.org/package/istanbul) tool provides code coverage.
 
@@ -404,7 +425,7 @@ Make sure it's all working with 'npm test'. The awesome [istanbul](https://www.n
 * `node.filterLevel(level, callback)` - iterates only nodes at specified level.
 * `node.validate(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. If any of the calls to callback method returns false, validate method will also return false. `localContext` is treated the same as for filter method.
 * `node.remove(callback)` - traverses node's children and triggers `callback(childNode, localContext)`. Callback method is expected to return the nodes to be deleted. Either a JefNode or an array of JefNode objects may be returned. After traversal is complete the nodes are removed from Js tree. The root object is never deleted. 
-* `node.refresh()` - call this to update Jef object after any of node's content have been created/updated/deleted. Shall not be used inside `node.filter()`, `node.validate()`, `node.remove()`. Example: TODO
+* `node.refresh()` - call this to update Jef object after any of node's content have been created/updated/deleted. Shall not be used inside `node.filter()`, `node.validate()`, `node.remove()`. 
 
 
 **JefLocalContext class**
