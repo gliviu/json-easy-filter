@@ -1,6 +1,6 @@
 {
   "name": "json-easy-filter",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Javascript node module for programmatic filtering and validation of Json objects.",
   "main": "index.js",
   "repository": {
